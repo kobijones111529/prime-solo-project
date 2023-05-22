@@ -58,4 +58,46 @@ router.post('/', rejectUnauthenticated, (req, res) => {
     });
 });
 
+router.delete('/:id', rejectUnauthenticated, (req, res) => {
+  const postId = Number(req.params.id);
+  const userId = Number(req.user.id);
+
+  const getPostsQuery = `
+    SELECT * FROM "posts"
+    WHERE "id" = $1;
+  `;
+  pool
+    .query(getPostsQuery, [postId]) // Select post
+    .then(result => result.rows[0])
+    .then(post => {
+      if (post === undefined) {
+        res.sendStatus(404);
+        return;
+      }
+
+      if (post === undefined || post.user_id !== userId) {
+        res.sendStatus(403);
+        return;
+      }
+
+      const deletePostQuery = `
+        DELETE FROM "posts"
+        WHERE "id" = $1;
+      `;
+      pool
+        .query(deletePostQuery, [postId])
+        .then(() => {
+          res.sendStatus(200);
+        })
+        .catch(err => {
+          console.error(err);
+          res.sendStatus(500);
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+});
+
 module.exports = router;
