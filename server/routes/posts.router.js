@@ -64,7 +64,7 @@ router.delete('/:id', rejectUnauthenticated, async (req, res) => {
   `;
 
   try {
-    const { rows: posts } = pool.query(getPostsQuery, [req.params.id]);
+    const { rows: posts } = await pool.query(getPostsQuery, [req.params.id]);
     const post = posts[0];
 
     // Post not found
