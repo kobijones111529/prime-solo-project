@@ -21,6 +21,7 @@ import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 
 import './App.css';
+import Feed from '../Feed/Feed';
 
 function App() {
   const dispatch = useDispatch();
@@ -38,6 +39,10 @@ function App() {
         <Switch>
           {/* Visiting localhost:3000 will redirect to localhost:3000/home */}
           <Redirect exact from="/" to="/home" />
+
+          <Route exact path="/feed">
+            <Feed />
+          </Route>
 
           {/* Visiting localhost:3000/about will show the about page. */}
           <Route
