@@ -4,23 +4,22 @@ const { rejectUnauthenticated } = require('../modules/authentication-middleware'
 const router = express.Router();
 
 // Get all posts
-router.get('/', (_, res) => {
+router.get('/', async (_, res) => {
   const query = `
     SELECT * FROM "posts";
   `;
-  pool
-    .query(query)
-    .then(result => {
-      res.send(result.rows);
-    })
-    .catch(err => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+
+  try {
+    const result = await pool.query(query);
+    res.send(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 });
 
 // Create a new post
-router.post('/', rejectUnauthenticated, (req, res) => {
+router.post('/', rejectUnauthenticated, async (req, res) => {
   const info = req.body;
 
   const query = `
@@ -47,57 +46,50 @@ router.post('/', rejectUnauthenticated, (req, res) => {
     info.contactUrl
   ];
 
-  pool
-    .query(query, queryData) // Execute query
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(err => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+  try {
+    const result = await pool.query(query, queryData)
+    res.sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 });
 
-router.delete('/:id', rejectUnauthenticated, (req, res) => {
-  const postId = Number(req.params.id);
+router.delete('/:id', rejectUnauthenticated, async (req, res) => {
   const userId = Number(req.user.id);
 
   const getPostsQuery = `
     SELECT * FROM "posts"
     WHERE "id" = $1;
   `;
-  pool
-    .query(getPostsQuery, [postId]) // Select post
-    .then(result => result.rows[0])
-    .then(post => {
-      if (post === undefined) {
-        res.sendStatus(404);
-        return;
-      }
 
-      if (post === undefined || post.user_id !== userId) {
-        res.sendStatus(403);
-        return;
-      }
+  try {
+    const { rows: posts } = pool.query(getPostsQuery, [req.params.id]);
+    const post = posts[0];
 
-      const deletePostQuery = `
-        DELETE FROM "posts"
-        WHERE "id" = $1;
-      `;
-      pool
-        .query(deletePostQuery, [postId])
-        .then(() => {
-          res.sendStatus(200);
-        })
-        .catch(err => {
-          console.error(err);
-          res.sendStatus(500);
-        });
-    })
-    .catch(err => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+    // Post not found
+    if (post === undefined) {
+      res.sendStatus(404);
+      return;
+    }
+
+    // Users don't match
+    if (post.user_id !== userId) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const deletePostQuery = `
+      DELETE FROM "posts"
+      WHERE "id" = $1;
+    `;
+
+    await pool.query(deletePostQuery, [post.id]);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 });
 
 module.exports = router;
