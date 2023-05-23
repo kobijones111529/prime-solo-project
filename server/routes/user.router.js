@@ -5,6 +5,7 @@ const {
 const encryptLib = require('../modules/encryption');
 const pool = require('../modules/pool');
 const userStrategy = require('../strategies/user.strategy');
+const postsRouter = require('./user/posts.router');
 
 const router = express.Router();
 
@@ -46,5 +47,7 @@ router.post('/logout', (req, res) => {
   req.logout();
   res.sendStatus(200);
 });
+
+router.use('/posts', postsRouter);
 
 module.exports = router;

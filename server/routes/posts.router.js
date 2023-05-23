@@ -18,6 +18,27 @@ router.get('/', async (_, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  const query = `
+    SELECT * FROM "posts"
+    WHERE "id" = $1;
+  `;
+
+  try {
+    const { rows: posts } = await pool.query(query, [req.params.id]);
+    const post = posts[0];
+
+    if (post === undefined) {
+      res.sendStatus(404);
+    } else {
+      res.send(post);
+    }
+  } catch (err)  {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
 // Create a new post
 router.post('/', rejectUnauthenticated, async (req, res) => {
   const info = req.body;
