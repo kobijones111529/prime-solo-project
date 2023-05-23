@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Nav from '../Nav/Nav';
 import Footer from '../Footer/Footer';
 
+import Feed from '../Feed/Feed';
 import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 
@@ -30,6 +31,12 @@ function App() {
       <div>
         <Nav />
         <Switch>
+          <Redirect exact from="/" to="/feed" />
+
+          <Route exact path="/feed">
+            <Feed />
+          </Route>
+
           <Route
             exact
             path="/login"
