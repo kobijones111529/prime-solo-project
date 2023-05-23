@@ -16,11 +16,10 @@ function UserPosts() {
         posts.map(post =>
           <Post
             key={post.id}
+            id={post.id}
             type={post.type}
             plantName={post.plant_name}
             imageUrl={post.image_url}
-            description={post.description}
-            location={{ latitude: post.latitude, longitude: post.longitude }}
           />
         )
       }

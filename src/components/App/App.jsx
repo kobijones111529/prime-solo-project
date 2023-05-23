@@ -19,6 +19,7 @@ import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 
 import './App.css';
+import ViewUserPost from '../ViewUserPost/ViewUserPost';
 
 function App() {
   const dispatch = useDispatch();
@@ -42,6 +43,10 @@ function App() {
 
           <ProtectedRoute exact path="/posts">
             <UserPosts />
+          </ProtectedRoute>
+
+          <ProtectedRoute exact path="/posts/:id">
+            <ViewUserPost />
           </ProtectedRoute>
 
           <Route

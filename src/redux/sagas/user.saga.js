@@ -33,9 +33,19 @@ function* fetchPosts() {
   }
 }
 
+function* fetchPost({ payload: id }) {
+  try {
+    const { data: post } = yield axios.get(`/api/posts/${id}`);
+    yield put({ type: 'SET_POST', payload: post });
+  } catch (err) {
+    console.error('Failed to fetch user post:', err);
+  }
+}
+
 function* userSaga() {
   yield takeLatest('FETCH_USER', fetchUser);
   yield takeLatest('FETCH_USER_POSTS', fetchPosts);
+  yield takeLatest('FETCH_POST', fetchPost);
 }
 
 export default userSaga;
