@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { put, takeLatest } from 'redux-saga/effects';
+import { put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 // worker Saga: will be fired on "FETCH_USER" actions
 function* fetchUser() {
@@ -42,10 +42,27 @@ function* fetchPost({ payload: id }) {
   }
 }
 
+function* postPost({ payload: post }) {
+  try {
+    yield axios.post('/api/posts', {
+      type: post.type,
+      plantName: post.plantName,
+      imageUrl: post.imageUrl,
+      description: post.description,
+      latitude: post.location.latitude,
+      longitude: post.location.longitude,
+      contactUrl: post.contactUrl
+    });
+  } catch (err) {
+    console.error('Failed to post:', err);
+  }
+}
+
 function* userSaga() {
   yield takeLatest('FETCH_USER', fetchUser);
   yield takeLatest('FETCH_USER_POSTS', fetchPosts);
   yield takeLatest('FETCH_POST', fetchPost);
+  yield takeEvery('POST_NEW_POST', postPost);
 }
 
 export default userSaga;
