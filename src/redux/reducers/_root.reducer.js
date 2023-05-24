@@ -1,12 +1,15 @@
 import { combineReducers } from 'redux';
 import errors from './errors.reducer';
-import user from './user.reducer';
+import user, { reducers as userReducers } from './user.reducer';
 import posts from './posts.reducer';
+import post from './post.reducer';
 
 const rootReducer = combineReducers({
   errors,
   user,
-  posts
+  userPosts: userReducers.posts,
+  posts,
+  post
 });
 
 export default rootReducer;

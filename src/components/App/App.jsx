@@ -8,14 +8,19 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
+
 import Nav from '../Nav/Nav';
 import Footer from '../Footer/Footer';
 
 import Feed from '../Feed/Feed';
+import UserPosts from '../UserPosts/UserPosts'
 import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 
 import './App.css';
+import ViewUserPost from '../ViewUserPost/ViewUserPost';
+import CreatePost from '../CreatePost/CreatePost';
 
 function App() {
   const dispatch = useDispatch();
@@ -36,6 +41,18 @@ function App() {
           <Route exact path="/feed">
             <Feed />
           </Route>
+
+          <ProtectedRoute exact path="/posts">
+            <UserPosts />
+          </ProtectedRoute>
+
+          <ProtectedRoute exact path="/posts/new">
+            <CreatePost />
+          </ProtectedRoute>
+
+          <ProtectedRoute exact path="/posts/:id">
+            <ViewUserPost />
+          </ProtectedRoute>
 
           <Route
             exact
