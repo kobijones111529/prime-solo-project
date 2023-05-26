@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { register } from '../../redux/sagas/registration';
 
 function RegisterForm() {
   const [username, setUsername] = useState('');
@@ -10,14 +11,11 @@ function RegisterForm() {
   const registerUser = (event) => {
     event.preventDefault();
 
-    dispatch({
-      type: 'REGISTER',
-      payload: {
-        username: username,
-        password: password,
-      },
-    });
-  }; // end registerUser
+    dispatch(register({
+      username: username,
+      password: password,
+    }));
+  };
 
   return (
     <form className="formPanel" onSubmit={registerUser}>
