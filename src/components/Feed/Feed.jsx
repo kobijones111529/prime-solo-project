@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Post from "./Post/Post";
+import { fetchPosts } from "../../redux/sagas/posts";
 
 function Feed() {
   const dispatch = useDispatch();
   const feed = useSelector(store => store.posts);
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_POSTS' });
+    dispatch(fetchPosts());
   }, []);
 
   return (

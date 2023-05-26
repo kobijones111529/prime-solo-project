@@ -1,14 +1,16 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Post from "./Post/Post";
+import { fetchUserPosts } from "../../redux/sagas/posts";
 
 function UserPosts() {
   const dispatch = useDispatch();
-  const posts = useSelector(store => store.userPosts);
+  const user = useSelector(store => store.user);
+  const posts = useSelector(store => store.posts);
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_USER_POSTS' });
-  }, []);
+    dispatch(fetchUserPosts());
+  }, [user]);
 
   return (
     <ol>

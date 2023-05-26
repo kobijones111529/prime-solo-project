@@ -14,7 +14,7 @@ function Nav() {
       </Link>
       <div>
         {/* If no user is logged in, show these links */}
-        {!user.id && (
+        {!user && (
           // If there's no user, show login/registration links
           <Link className="navLink" to="/login">
             Login / Register
@@ -22,7 +22,7 @@ function Nav() {
         )}
 
         {/* If a user is logged in, show these links */}
-        {user.id && (
+        {user && (
           <>
             <Link className="navLink" to="/posts">
               Posts

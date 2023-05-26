@@ -21,6 +21,7 @@ import RegisterPage from '../RegisterPage/RegisterPage';
 import './App.css';
 import ViewUserPost from '../ViewUserPost/ViewUserPost';
 import CreatePost from '../CreatePost/CreatePost';
+import { fetchUser as fetchUser } from '../../redux/sagas/user';
 
 function App() {
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ function App() {
   const user = useSelector(store => store.user);
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_USER' });
+    dispatch(fetchUser());
   }, [dispatch]);
 
   return (
@@ -58,10 +59,10 @@ function App() {
             exact
             path="/login"
           >
-            {user.id ?
+            {user ?
               // If the user is already logged in, 
               // redirect to the /user page
-              <Redirect to="/user" />
+              <Redirect to="/feed" />
               :
               // Otherwise, show the login page
               <LoginPage />
@@ -72,10 +73,10 @@ function App() {
             exact
             path="/registration"
           >
-            {user.id ?
+            {user ?
               // If the user is already logged in, 
               // redirect them to the /user page
-              <Redirect to="/user" />
+              <Redirect to="/" />
               :
               // Otherwise, show the registration page
               <RegisterPage />

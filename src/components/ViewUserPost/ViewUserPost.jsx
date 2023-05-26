@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { fetchPost } from "../../redux/sagas/post";
 
 function ViewUserPost() {
   const { id } = useParams();
@@ -8,7 +9,7 @@ function ViewUserPost() {
   const post = useSelector(store => store.post);
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_POST', payload: id });
+    dispatch(fetchPost(id));
   }, [id]);
 
   if (post === null) {
