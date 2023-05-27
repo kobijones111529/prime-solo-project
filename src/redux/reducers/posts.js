@@ -1,15 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+export const PostsState = {
+  None: Symbol('None'),
+  Loading: Symbol('Loading'),
+  Posts: Symbol('Posts'),
+  Error: Symbol('Error')
+};
+
 const postsSlice = createSlice({
   name: 'posts',
-  initialState: [],
+  initialState: { tag: PostsState.None },
   reducers: {
-    set: (_, action) => {
-      return [...action.payload]
-    }
+    clear: () => ({ tag: PostsState.None }),
+    loading: () => ({ tag: PostsState.Loading }),
+    set: (_, { payload: posts }) => ({ tag: PostsState.Posts, posts: [...posts] }),
+    error: (_, { payload: error }) => ({ tag: PostsState.Error, error })
   }
 });
 
-export const { set } = postsSlice.actions;
+export const {
+  clear,
+  loading,
+  set,
+  error
+} = postsSlice.actions;
 
 export default postsSlice.reducer;

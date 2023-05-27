@@ -1,16 +1,17 @@
 import axios from "axios";
 import { put, takeLatest } from "redux-saga/effects";
-import { set as setPosts } from '../reducers/posts'
-import { fetchUser as fetchUser } from "./user";
+import { error, loading as loadingPosts, set as setPosts } from '../reducers/posts'
 
 const qualifiedName = (name) => `saga/posts/${name}`;
 
 const sagas = {
   fetchPosts: { type: qualifiedName('fetch'), saga: function*() {
     try {
+      yield put(loadingPosts());
       const { data: posts } = yield axios.get('/api/posts');
       yield put(setPosts(posts));
     } catch (err) {
+      yield put(error(err));
       console.error(err);
     }
   } },

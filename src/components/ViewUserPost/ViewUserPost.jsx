@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchPost } from "../../redux/sagas/post";
+import { PostState } from "../../redux/reducers/post";
 
 function ViewUserPost() {
   const { id } = useParams();
@@ -12,17 +13,30 @@ function ViewUserPost() {
     dispatch(fetchPost(id));
   }, [id]);
 
-  if (post === null) {
-    return <p>Loading . . .</p>
-  }
+  const showPost = () => {
+    switch (post.tag) {
+      case PostState.None:
+      case PostState.Loading:
+        return <p>Loading...</p>;
+      case PostState.Post:
+        const p = post.post;
+        return (
+          <>
+            <img src={p.image_url} alt={p.plant_name} />
+            <p>{p.type}</p>
+            <p>{p.plant_name}</p>
+            <p>{p.description}</p>
+            <p>{p.latitude}, {p.longitude}</p>
+          </>
+        );
+      default:
+        return <p>{'Something went wrong :('}</p>;
+    }
+  };
 
   return (
     <div>
-      <img src={post.image_url} alt={post.plant_name} />
-      <p>{post.type}</p>
-      <p>{post.plant_name}</p>
-      <p>{post.description}</p>
-      <p>{post.latitude}, {post.longitude}</p>
+      {showPost()}
     </div>
   );
 }

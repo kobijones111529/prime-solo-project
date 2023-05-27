@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import LoginPage from '../LoginPage/LoginPage';
 import {useSelector} from 'react-redux';
+import { UserState } from '../../redux/reducers/user';
 
 // A Custom Wrapper Component -- This will keep our code DRY.
 // Responsible for watching redux state, and returning an appropriate component
@@ -27,7 +28,7 @@ function ProtectedRoute({ component, children, ...props }) {
       // are now passed along to the 'Route' Component
       {...props}
     >
-      {user ?
+      {user.tag === UserState.User ?
         // If the user is logged in, show the protected component
         <ProtectedComponent />
         :
