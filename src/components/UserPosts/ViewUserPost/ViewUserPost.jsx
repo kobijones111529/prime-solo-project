@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { fetchPost } from "../../redux/sagas/post";
-import { PostState } from "../../redux/reducers/post";
+import { Link, useParams } from "react-router-dom";
+import { fetchPost } from "../../../redux/sagas/post";
+import { PostState } from "../../../redux/reducers/post";
 
 function ViewUserPost() {
   const { id } = useParams();
@@ -27,6 +27,9 @@ function ViewUserPost() {
             <p>{p.plant_name}</p>
             <p>{p.description}</p>
             <p>{p.latitude}, {p.longitude}</p>
+            <Link to={`/posts/${id}/edit`}>
+              <button>Edit</button>
+            </Link>
           </>
         );
       default:

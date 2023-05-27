@@ -47,7 +47,7 @@ router.get('/:id', async (req, res) => {
 
 // Create a new post
 router.post('/', rejectUnauthenticated, async (req, res) => {
-  const info = req.body;
+  const data = req.body;
 
   const query = `
     INSERT INTO "posts" (
@@ -64,13 +64,13 @@ router.post('/', rejectUnauthenticated, async (req, res) => {
   `;
   const queryData = [
     req.user.id,
-    info.type,
-    info.plantName,
-    info.imageUrl,
-    info.description,
-    info.latitude,
-    info.longitude,
-    info.contactUrl
+    data.type,
+    data.plantName,
+    data.imageUrl,
+    data.description,
+    data.location.latitude,
+    data.location.longitude,
+    data.contactUrl
   ];
 
   try {

@@ -19,10 +19,11 @@ import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 
 import './App.css';
-import ViewUserPost from '../ViewUserPost/ViewUserPost';
+import ViewUserPost from '../UserPosts/ViewUserPost/ViewUserPost';
 import CreatePost from '../CreatePost/CreatePost';
 import { fetchUser as fetchUser } from '../../redux/sagas/user';
 import { UserState } from '../../redux/reducers/user';
+import EditUserPost from '../UserPosts/EditUserPost/EditUserPost';
 
 function App() {
   const dispatch = useDispatch();
@@ -54,6 +55,10 @@ function App() {
 
           <ProtectedRoute exact path="/posts/:id">
             <ViewUserPost />
+          </ProtectedRoute>
+
+          <ProtectedRoute exact path="/posts/:id/edit">
+            <EditUserPost />
           </ProtectedRoute>
 
           <Route

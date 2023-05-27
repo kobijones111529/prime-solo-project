@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { postNewPost } from "../../redux/sagas/posts";
 
 function CreatePost() {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ function CreatePost() {
       return;
     }
 
-    dispatch({ type: 'POST_NEW_POST', payload: {
+    dispatch(postNewPost({
       type: validatedInput.type,
       plantName: validatedInput.plantName,
       imageUrl: validatedInput.imageUrl,
@@ -56,7 +57,7 @@ function CreatePost() {
         longitude: 0
       },
       contactUrl: validatedInput.contactUrl
-    } });
+    }));
   };
 
   return (
