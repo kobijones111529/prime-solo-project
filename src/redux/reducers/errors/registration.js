@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const qualifiedName = name => `errors/${name}`;
+
 const registrationSlice = createSlice({
-  name: 'registration',
+  name: qualifiedName('registration'),
   initialState: null,
   reducers: {
     clear: () => null,

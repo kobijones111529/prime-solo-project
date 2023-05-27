@@ -22,6 +22,7 @@ import './App.css';
 import ViewUserPost from '../ViewUserPost/ViewUserPost';
 import CreatePost from '../CreatePost/CreatePost';
 import { fetchUser as fetchUser } from '../../redux/sagas/user';
+import { UserState } from '../../redux/reducers/user';
 
 function App() {
   const dispatch = useDispatch();
@@ -59,7 +60,7 @@ function App() {
             exact
             path="/login"
           >
-            {user ?
+            {user.tag === UserState.User ?
               // If the user is already logged in, 
               // redirect to the /user page
               <Redirect to="/feed" />
@@ -73,7 +74,7 @@ function App() {
             exact
             path="/registration"
           >
-            {user ?
+            {user.tag === UserState.User ?
               // If the user is already logged in, 
               // redirect them to the /user page
               <Redirect to="/" />

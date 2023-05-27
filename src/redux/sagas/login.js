@@ -1,7 +1,7 @@
 import axios from "axios";
 import { put, takeLatest } from "redux-saga/effects";
 import { fetchUser as fetchUser } from "./user";
-import { unset as unsetUser } from "../reducers/user";
+import { clear as unsetUser } from "../reducers/user";
 import { clear as clearLoginError, unspecified as loginError } from "../reducers/errors/login";
 
 const qualifiedName = name => `saga/${name}`;
