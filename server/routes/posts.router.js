@@ -82,6 +82,65 @@ router.post('/', rejectUnauthenticated, async (req, res) => {
   }
 });
 
+router.patch('/:id', rejectUnauthenticated, async (req, res) => {
+  try {
+    const userId = Number(req.user.id);
+    const postId = Number(req.params.id);
+
+    const getQuery = `
+      SELECT
+        "user_id" AS "userId"
+      FROM "posts"
+      WHERE "id" = $1;
+    `;
+
+    const { rows: posts } = await pool.query(getQuery, [postId]);
+    const post = posts[0];
+
+    if (post === undefined) {
+      res.sendStatus(404);
+    }
+
+    if (post.userId !== userId) {
+      res.sendStatus(403);
+    }
+
+    const data = {
+      'type': req.body.type,
+      'plant_name': req.body.plantName,
+      'image_url': req.body.imageUrl,
+      'description': req.body.description,
+      'contact_url': req.body.contactUrl,
+      'longitude': req.body.location?.longitude,
+      'latitude': req.body.location?.latitude
+    }
+    const entries = Object.entries(data).filter(([_, value]) => value !== undefined);
+
+    if (entries.length < 1) {
+      res.sendStatus(200);
+      return;
+    }
+
+    const offset = 1;
+    const updates = entries
+      .map(([key, _], index) => `${key} = $${index + 1 + offset}`)
+      .join(', ');
+    const sqlParams = [postId, ...entries.map(([_, value]) => value)]
+
+    const editQuery = `
+      UPDATE "posts"
+      SET ${updates}
+      WHERE "id" = $1;
+    `;
+    await pool.query(editQuery, sqlParams);
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
 router.delete('/:id', rejectUnauthenticated, async (req, res) => {
   const userId = Number(req.user.id);
 
