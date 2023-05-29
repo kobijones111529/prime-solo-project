@@ -1,28 +1,39 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const UserState = {
-  None: Symbol('None'),
-  Loading: Symbol('Loading'),
-  User: Symbol('User'),
-  Error: Symbol('Error')
-};
+/**
+ * @typedef {import("../../../types/user").User} User
+ */
 
-export const UserError = {
-  Unauthenticated: Symbol('Unauthenticated'),
-  Error: Symbol('Error')
-};
+/**
+ * @typedef {'None' | 'Loading' | 'Some' | 'Error'} UserTag
+ * @typedef {{ tag: UserTag }} TaggedUser
+ * @typedef {{ tag: 'None' }} None
+ * @typedef {{ tag: 'Loading' }} Loading
+ * @typedef {{ tag: 'Some', user: User }} Some
+ * @typedef {{ tag: 'Error', error: any }} Error
+ * @typedef {TaggedUser & (None | Loading | Some | Error)} UserState
+ */
+
+/** @type {() => UserState} */
+const initialState = () => ({ tag: 'None' })
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: { tag: UserState.None },
+  initialState,
   reducers: {
-    clear: () => ({ tag: UserState.None }),
-    loading: () => ({ tag: UserState.Loading }),
-    set: (_, { payload: user }) => ({ tag: UserState.User, user }),
-    error: (_, { payload: error }) => ({ tag: UserState.Error, error })
+    clear: (_) => ({ tag: 'None' }),
+    loading: (_) => ({ tag: 'Loading' }),
+    /**
+     * @param {{ payload: User }} action
+     */
+    set: (_, action) => ({ tag: 'Some', user: action.payload }),
+    /**
+     * @param {{ payload: any }} action
+     */
+    error: (_, action) => ({ tag: 'Error', error: action.payload })
   }
 });
 
-export const { set, clear } = userSlice.actions;
+export const { clear, loading, set, error } = userSlice.actions;
 
 export default userSlice.reducer;

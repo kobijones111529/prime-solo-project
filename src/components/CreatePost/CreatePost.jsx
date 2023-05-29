@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { postNewPost } from "../../redux/sagas/posts";
 
 function CreatePost() {
   const dispatch = useDispatch();
@@ -35,9 +36,7 @@ function CreatePost() {
     return [errors, Object.keys(errors).length === 0 ? input : null];
   }, [input]);
 
-  /**
-   * @param {SubmitEvent} event
-   */
+  /** @type {import("react").FormEventHandler<HTMLFormElement>} */
   const handleSubmit = event => {
     event.preventDefault();
 
@@ -46,7 +45,7 @@ function CreatePost() {
       return;
     }
 
-    dispatch({ type: 'POST_NEW_POST', payload: {
+    dispatch(postNewPost({
       type: validatedInput.type,
       plantName: validatedInput.plantName,
       imageUrl: validatedInput.imageUrl,
@@ -55,8 +54,8 @@ function CreatePost() {
         latitude: 0,
         longitude: 0
       },
-      contactUrl: validatedInput.contactUrl
-    } });
+      contact: validatedInput.contactUrl
+    }));
   };
 
   return (
@@ -67,8 +66,11 @@ function CreatePost() {
           Offer
           <input
             type="radio"
-            value="offer"
-            onChange={event => setType(event.target.value)}
+            onChange={event => {
+              if (event.target.checked) {
+                setType('offer');
+              }
+            }}
             checked={type === 'offer'}
           />
         </label>
@@ -76,8 +78,11 @@ function CreatePost() {
           Request
           <input
             type="radio"
-            value="request"
-            onChange={event => setType(event.target.value)}
+            onChange={event => {
+              if (event.target.checked) {
+                setType('request');
+              }
+            }}
             checked={type === 'request'}
           />
         </label>

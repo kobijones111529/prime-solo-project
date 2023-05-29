@@ -1,20 +1,38 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const PostState = {
-  None: Symbol('None'),
-  Loading: Symbol('Loading'),
-  Post: Symbol('Post'),
-  Error: Symbol('Error')
-};
+/**
+ * @typedef {import("../../../types/posts").Post} Post
+ */
+
+/**
+ * @typedef {'None' | 'Loading' | 'Some' | 'Error'} PostTag
+ * @typedef {{ tag: PostTag }} TaggedPost
+ * @typedef {{ tag: 'None' }} None
+ * @typedef {{ tag: 'Loading' }} Loading
+ * @typedef {{ tag: 'Some', post: Post }} Some
+ * @typedef {{ tag: 'Error', error: any }} Error
+ * @typedef {TaggedPost & (None | Loading | Some | Error)} PostState
+ */
+
+/**
+ * @returns {PostState}
+ */
+const initialState = () => ({ tag: 'None' });
 
 const postSlice = createSlice({
   name: 'post',
-  initialState: { tag: PostState.None },
+  initialState,
   reducers: {
-    clear: () => ({ tag: PostState.None }),
-    loading: () => ({ tag: PostState.Loading }),
-    set: (_, { payload: post }) => ({ tag: PostState.Post, post }),
-    error: (_, { payload: error }) => ({ tag: PostState.Error, error })
+    clear: (_) => ({ tag: 'None' }),
+    loading: (_) => ({ tag: 'Loading' }),
+    /**
+     * @param {{ payload: Post }} action
+     */
+    set: (_, action) => ({ tag: 'Some', post: action.payload }),
+    /**
+     * @param {{ payload: any }} action
+     */
+    error: (_, action) => ({ tag: 'Error', error: action.payload })
   }
 });
 

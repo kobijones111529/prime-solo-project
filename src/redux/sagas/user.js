@@ -3,6 +3,9 @@ import { put, takeLatest } from "redux-saga/effects";
 import { set as setUser } from "../reducers/user";
 import { clear as clearError, unspecified as unspecifiedError, unauthenticated as userUnauthenticated } from "../reducers/errors/user";
 
+/**
+ * @param {string} name
+ */
 const qualifiedName = name => `saga/user/${name}`;
 
 const sagas = {

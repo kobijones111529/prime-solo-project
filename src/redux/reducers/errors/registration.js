@@ -1,14 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+/**
+ * @param {string} name
+ */
 const qualifiedName = name => `errors/${name}`;
+
+/**
+ * @typedef {'invalid_input' | 'unspecified'} Error
+ */
+
+/**
+ * @returns {Error}
+ */
+const initialState = () => null
 
 const registrationSlice = createSlice({
   name: qualifiedName('registration'),
-  initialState: null,
+  initialState,
   reducers: {
-    clear: () => null,
-    invalidInput: () => 'invalid_input',
-    unspecified: () => 'unspecified'
+    clear: (_) => null,
+    invalidInput: (_) => 'invalid_input',
+    unspecified: (_) => 'unspecified'
   }
 });
 

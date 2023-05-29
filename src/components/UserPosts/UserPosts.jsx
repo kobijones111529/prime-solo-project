@@ -1,13 +1,17 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Post from "./Post/Post";
 import { fetchUserPosts } from "../../redux/sagas/posts";
-import { PostsState } from "../../redux/reducers/posts";
+import React from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+
+/**
+ * @typedef {import("../../../types/posts").Post} Post
+ */
 
 function UserPosts() {
-  const dispatch = useDispatch();
-  const user = useSelector(store => store.user);
-  const posts = useSelector(store => store.posts);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(store => store.user);
+  const posts = useAppSelector(store => store.posts);
 
   useEffect(() => {
     dispatch(fetchUserPosts());
@@ -15,14 +19,14 @@ function UserPosts() {
 
   const showPosts = () => {
     switch (posts.tag) {
-      case PostsState.None:
-      case PostsState.Loading:
+      case 'None':
+      case 'Loading':
         return <p>Loading...</p>;
-      case PostsState.Posts:
+      case 'Some':
         const p = posts.posts;
         return (
           <ol>{
-            p.map(post =>
+            p.map((/** @type {Post} */ post) =>
               <Post
                 key={post.id}
                 id={post.id}

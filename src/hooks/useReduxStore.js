@@ -18,3 +18,8 @@ const useUser = () => {
 */
 
 export default useReduxStore;
+
+/**
+ * @template T
+ * @typedef {[T, import('react').Dispatch<import('react').SetStateAction<T>>]} useState
+ */

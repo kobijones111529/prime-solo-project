@@ -2,11 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import LogOutButton from './LogOutButton/LogOutButton';
 import './Nav.css';
-import { useSelector } from 'react-redux';
-import { UserState } from '../../redux/reducers/user';
+import { useAppSelector } from '../../redux/hooks';
 
 function Nav() {
-  const user = useSelector((store) => store.user);
+  const user = useAppSelector((store) => store.user);
 
   return (
     <nav className="nav">
@@ -15,7 +14,7 @@ function Nav() {
       </Link>
       <div>
         {/* If no user is logged in, show these links */}
-        {user.tag !== UserState.User && (
+        {user.tag !== 'Some' && (
           // If there's no user, show login/registration links
           <Link className="navLink" to="/login">
             Login / Register
@@ -23,7 +22,7 @@ function Nav() {
         )}
 
         {/* If a user is logged in, show these links */}
-        {user.tag === UserState.User && (
+        {user.tag === 'Some' && (
           <>
             <Link className="navLink" to="/posts">
               Posts

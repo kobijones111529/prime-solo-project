@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../redux/sagas/login';
 import { invalidInput } from '../../redux/reducers/errors/login';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const errors = useSelector(store => store.errors);
-  const dispatch = useDispatch();
+  const errors = useAppSelector(store => store.errors);
+  const dispatch = useAppDispatch();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -25,7 +25,7 @@ function LoginForm() {
   return (
     <form className="formPanel" onSubmit={handleSubmit}>
       <h2>Login</h2>
-      {errors.login === 'unspecified' && (
+      {errors.login && (
         <h3 className="alert" role="alert">
           {errors.login}
         </h3>

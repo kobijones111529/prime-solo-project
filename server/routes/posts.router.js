@@ -3,6 +3,11 @@ const pool = require('../modules/pool');
 const { rejectUnauthenticated } = require('../modules/authentication-middleware');
 const router = express.Router();
 
+/**
+ * @typedef {import('../../types/posts').NewPost} NewPost
+ * @typedef {import('../../types/posts').EditPost} EditPost
+ */
+
 // Get all posts
 router.get('/', async (_, res) => {
   const query = `
@@ -47,7 +52,8 @@ router.get('/:id', async (req, res) => {
 
 // Create a new post
 router.post('/', rejectUnauthenticated, async (req, res) => {
-  const info = req.body;
+  /** @type {NewPost} */
+  const data = req.body;
 
   const query = `
     INSERT INTO "posts" (
@@ -64,18 +70,83 @@ router.post('/', rejectUnauthenticated, async (req, res) => {
   `;
   const queryData = [
     req.user.id,
-    info.type,
-    info.plantName,
-    info.imageUrl,
-    info.description,
-    info.latitude,
-    info.longitude,
-    info.contactUrl
+    data.type,
+    data.plantName,
+    data.imageUrl,
+    data.description,
+    data.location.latitude,
+    data.location.longitude,
+    data.contact
   ];
 
   try {
-    const result = await pool.query(query, queryData)
+    await pool.query(query, queryData)
     res.sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+router.patch('/:id', rejectUnauthenticated, async (req, res) => {
+  try {
+    const userId = Number(req.user.id);
+    const postId = Number(req.params.id);
+
+    const getQuery = `
+      SELECT
+        "user_id" AS "userId"
+      FROM "posts"
+      WHERE "id" = $1;
+    `;
+
+    /**
+     * @type {{ rows: { userId: number }[] }}
+     */
+    const { rows: posts } = await pool.query(getQuery, [postId]);
+    const post = posts[0];
+
+    if (post === undefined) {
+      res.sendStatus(404);
+    }
+
+    if (post.userId !== userId) {
+      res.sendStatus(403);
+    }
+
+    /** @type {EditPost} */
+    const body = req.body;
+
+    const data = {
+      'type': body.type,
+      'plant_name': body.plantName,
+      'image_url': body.imageUrl,
+      'description': body.description,
+      'contact_url': body.contact,
+      'longitude': body.location?.longitude,
+      'latitude': body.location?.latitude
+    }
+    const entries = Object.entries(data).filter(([_, value]) => value !== undefined);
+
+    if (entries.length < 1) {
+      res.sendStatus(200);
+      return;
+    }
+
+    const offset = 1;
+    const updates = entries
+      .map(([key, _], index) => `${key} = $${index + 1 + offset}`)
+      .join(', ');
+    const sqlParams = [postId, ...entries.map(([_, value]) => value)]
+
+    const editQuery = `
+      UPDATE "posts"
+      SET ${updates}
+      WHERE "id" = $1;
+    `;
+    await pool.query(editQuery, sqlParams);
+
+    res.sendStatus(200);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -84,13 +155,17 @@ router.post('/', rejectUnauthenticated, async (req, res) => {
 
 router.delete('/:id', rejectUnauthenticated, async (req, res) => {
   const userId = Number(req.user.id);
+  const postId = Number(req.params.id);
 
   const getPostsQuery = `
-    SELECT * FROM "posts"
+    SELECT
+      "user_id" AS "userId"
+    FROM "posts"
     WHERE "id" = $1;
   `;
 
   try {
+    /** @type {{ rows: { userId: number }[] }} */
     const { rows: posts } = await pool.query(getPostsQuery, [req.params.id]);
     const post = posts[0];
 
@@ -101,7 +176,7 @@ router.delete('/:id', rejectUnauthenticated, async (req, res) => {
     }
 
     // Users don't match
-    if (post.user_id !== userId) {
+    if (post.userId !== userId) {
       res.sendStatus(403);
       return;
     }
@@ -111,7 +186,7 @@ router.delete('/:id', rejectUnauthenticated, async (req, res) => {
       WHERE "id" = $1;
     `;
 
-    await pool.query(deletePostQuery, [post.id]);
+    await pool.query(deletePostQuery, [postId]);
     res.sendStatus(200);
   } catch (err) {
     console.error(err);
