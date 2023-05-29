@@ -24,7 +24,7 @@ function ViewUserPost() {
         const p = post.post;
         return (
           <>
-            <img src={p.image_url} alt={p.plant_name} />
+            {p.image_url ? <img src={p.image_url} alt={p.plant_name} /> : <p>No image</p>}
             <p>{p.type}</p>
             <p>{p.plant_name}</p>
             <p>{p.description}</p>

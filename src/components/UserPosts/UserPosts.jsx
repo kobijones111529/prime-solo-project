@@ -32,7 +32,7 @@ function UserPosts() {
                 id={post.id}
                 type={post.type}
                 plantName={post.plant_name}
-                imageUrl={post.image_url}
+                { ...(post.image_url && { imageUrl: post.image_url }) }
               />
             )
           }</ol>

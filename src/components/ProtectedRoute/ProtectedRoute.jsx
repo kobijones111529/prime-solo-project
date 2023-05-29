@@ -13,7 +13,10 @@ import { useAppSelector } from '../../redux/hooks';
 // by checking req.isAuthenticated for authentication
 // and by checking req.user for authorization
 
-function ProtectedRoute({ children, ...props }) {
+/**
+ * @param {*} props
+ */
+function ProtectedRoute({ component, children, ...props }) {
   const user = useAppSelector((store) => store.user);
 
   // Component may be passed in as a "component" prop,

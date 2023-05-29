@@ -1,4 +1,6 @@
 const express = require('express');
+const { Pool } = require('pg');
+/** @type {Pool} */
 const pool = require('../modules/pool');
 const { rejectUnauthenticated } = require('../modules/authentication-middleware');
 const router = express.Router();
@@ -52,6 +54,11 @@ router.get('/:id', async (req, res) => {
 
 // Create a new post
 router.post('/', rejectUnauthenticated, async (req, res) => {
+  if (!req.user) {
+    res.sendStatus(500);
+    return;
+  }
+
   /** @type {NewPost} */
   const data = req.body;
 
@@ -89,6 +96,11 @@ router.post('/', rejectUnauthenticated, async (req, res) => {
 });
 
 router.patch('/:id', rejectUnauthenticated, async (req, res) => {
+  if (!req.user) {
+    res.sendStatus(500);
+    return;
+  }
+
   try {
     const userId = Number(req.user.id);
     const postId = Number(req.params.id);
@@ -108,10 +120,12 @@ router.patch('/:id', rejectUnauthenticated, async (req, res) => {
 
     if (post === undefined) {
       res.sendStatus(404);
+      return;
     }
 
     if (post.userId !== userId) {
       res.sendStatus(403);
+      return;
     }
 
     /** @type {EditPost} */
@@ -154,6 +168,11 @@ router.patch('/:id', rejectUnauthenticated, async (req, res) => {
 });
 
 router.delete('/:id', rejectUnauthenticated, async (req, res) => {
+  if (!req.user) {
+    res.sendStatus(500);
+    return;
+  }
+
   const userId = Number(req.user.id);
   const postId = Number(req.params.id);
 

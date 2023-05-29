@@ -6,27 +6,25 @@ import {
   Switch,
 } from 'react-router-dom';
 
-import { useDispatch, useSelector } from 'react-redux';
+import ProtectedRoute from 'components/ProtectedRoute/ProtectedRoute';
 
-import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
+import Nav from 'components/Nav/Nav';
+import Footer from 'components/Footer/Footer';
 
-import Nav from '../Nav/Nav';
-import Footer from '../Footer/Footer';
-
-import Feed from '../Feed/Feed';
-import UserPosts from '../UserPosts/UserPosts'
-import LoginPage from '../LoginPage/LoginPage';
-import RegisterPage from '../RegisterPage/RegisterPage';
+import Feed from 'components/Feed/Feed';
+import UserPosts from 'components/UserPosts/UserPosts';
+import LoginPage from 'components/LoginPage/LoginPage';
+import RegisterPage from 'components/RegisterPage/RegisterPage';
 
 import './App.css';
-import ViewUserPost from '../UserPosts/ViewUserPost/ViewUserPost';
-import CreatePost from '../CreatePost/CreatePost';
-import { fetchUser as fetchUser } from '../../redux/sagas/user';
-import EditUserPost from '../UserPosts/EditUserPost/EditUserPost';
-import { useAppSelector } from '../../redux/hooks';
+import ViewUserPost from 'components/UserPosts/ViewUserPost/ViewUserPost';
+import CreatePost from 'components/CreatePost/CreatePost';
+import { fetchUser as fetchUser } from 'redux/sagas/user';
+import EditUserPost from 'components/UserPosts/EditUserPost/EditUserPost';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const user = useAppSelector(store => store.user);
 

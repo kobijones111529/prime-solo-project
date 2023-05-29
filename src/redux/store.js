@@ -3,7 +3,6 @@ import createSagaMiddleware from 'redux-saga'
 import logger from "redux-logger";
 import rootSaga from "./sagas";
 import rootReducer from "./reducers";
-import { useDispatch, useSelector } from "react-redux";
 
 const sagaMiddleware = createSagaMiddleware();
 

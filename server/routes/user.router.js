@@ -3,6 +3,8 @@ const {
   rejectUnauthenticated,
 } = require('../modules/authentication-middleware');
 const encryptLib = require('../modules/encryption');
+const { Pool } = require('pg');
+/** @type {Pool} */
 const pool = require('../modules/pool');
 const userStrategy = require('../strategies/user.strategy');
 const postsRouter = require('./user/posts.router');

@@ -16,7 +16,10 @@ const qualifiedName = name => `saga/${name}`;
 const sagas = {
   login: {
     type: qualifiedName('login'),
-    saga: function*({ payload: credentials }) {
+    saga: function*(
+      /** @type {{ payload: LoginCredentials }} */
+      { payload: credentials }
+    ) {
       try {
         yield put(clearLoginError());
         yield axios.post('/api/user/login', credentials, {

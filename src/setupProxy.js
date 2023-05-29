@@ -7,7 +7,7 @@ const dotenv = require('dotenv')
 
 dotenv.config()
 
-const port = Number(process.env.SERVER_PORT) || Number(process.env.PORT) || 5000
+const port = Number(process.env['SERVER_PORT']) || Number(process.env['PORT']) || 5000
 
 /**
  * @param {Express} app

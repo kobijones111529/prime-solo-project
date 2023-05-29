@@ -2,6 +2,7 @@ import axios from "axios";
 import { put, takeLatest } from "redux-saga/effects";
 import { set as setUser } from "../reducers/user";
 import { clear as clearError, unspecified as unspecifiedError, unauthenticated as userUnauthenticated } from "../reducers/errors/user";
+import { number } from "prop-types";
 
 /**
  * @param {string} name
@@ -15,7 +16,7 @@ const sagas = {
       yield put(setUser(user));
       yield put(clearError());
     } catch (err) {
-      if (err.response.status === 403) {
+      if (axios.isAxiosError(err) && err.response?.status === 403) {
         yield put(userUnauthenticated());
       } else {
         yield put(unspecifiedError());

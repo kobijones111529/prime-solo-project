@@ -1,10 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+/**
+ * @param {string} name
+ */
 const qualifiedName = name => `errors/${name}`;
+
+/**
+ * @return {string | null}
+ */
+const initialState = () => null
 
 const userSlice = createSlice({
   name: qualifiedName('user'),
-  initialState: null,
+  initialState,
   reducers: {
     clear: () => null,
     unauthenticated: () => 'unauthenticated',

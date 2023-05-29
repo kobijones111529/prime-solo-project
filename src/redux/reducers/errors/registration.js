@@ -10,7 +10,7 @@ const qualifiedName = name => `errors/${name}`;
  */
 
 /**
- * @returns {Error}
+ * @returns {Error | null}
  */
 const initialState = () => null
 
@@ -18,7 +18,7 @@ const registrationSlice = createSlice({
   name: qualifiedName('registration'),
   initialState,
   reducers: {
-    clear: (_) => null,
+    clear: () => null,
     invalidInput: (_) => 'invalid_input',
     unspecified: (_) => 'unspecified'
   }

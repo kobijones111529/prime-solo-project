@@ -2,6 +2,10 @@ import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { postNewPost } from "../../redux/sagas/posts";
 
+/**
+ * @typedef {import("../../../types/posts").NewPost} NewPost
+ */
+
 function CreatePost() {
   const dispatch = useDispatch();
 
@@ -13,6 +17,9 @@ function CreatePost() {
   const [contactUrl, setContactUrl] = useState('');
 
   const input = useMemo(() => {
+    /**
+     * @property {'offer' | 'request' | undefined} type
+     */
     const input = {};
 
     input.type = type;
@@ -24,17 +31,55 @@ function CreatePost() {
     return input;
   }, [type, plantName, imageUrl, description, contactUrl]);
 
-  const [inputErrors, validatedInput] = useMemo(() => {
-    const missing = 'missing';
+  const validatedInput = useMemo(
+    /** @returns {NewPost | null} */
+    () => {
+      const trimmed = {
+        plantName: plantName.trim(),
+        imageUrl: imageUrl.trim(),
+        description: description.trim(),
+        conatct: contactUrl.trim()
+      };
 
-    const errors = {};
+      /**
+       * @typedef Input
+       * @property {'offer' | 'request'} [postType]
+       * @property {string} [imageUrl]
+       * @property {string} [plantName]
+       * @property {string} [description]
+       * @property {string} [contact]
+       */
 
-    if (input.type === undefined) errors.type = missing;
-    if (input.plantName === undefined) errors.plantName = missing;
-    if (input.contactUrl === undefined) errors.contactUrl = missing;
+      /** @type {Input} */
+      const input = {
+        ...(type && { postType: type }),
+        ...(trimmed.imageUrl.length > 0 && { imageUrl: trimmed.imageUrl }),
+        ...(trimmed.plantName.length > 0 && { plantName: trimmed.plantName }),
+        ...(trimmed.description.length > 0 && { description: trimmed.description }),
+        ...(trimmed.conatct.length > 0 && { contact: trimmed.conatct })
+      };
 
-    return [errors, Object.keys(errors).length === 0 ? input : null];
-  }, [input]);
+      if (!(
+        input.postType
+        && input.plantName
+        && input.contact
+      )) {
+        return null;
+      }
+
+      return {
+        type: input.postType,
+        location: {
+          latitude: 0,
+          longitude: 0
+        },
+        plantName: input.plantName,
+        imageUrl: input.imageUrl || null,
+        description: input.description || null,
+        contact: input.contact
+      };
+    }, [type, plantName, imageUrl, description, contactUrl]
+  );
 
   /** @type {import("react").FormEventHandler<HTMLFormElement>} */
   const handleSubmit = event => {
@@ -45,17 +90,7 @@ function CreatePost() {
       return;
     }
 
-    dispatch(postNewPost({
-      type: validatedInput.type,
-      plantName: validatedInput.plantName,
-      imageUrl: validatedInput.imageUrl,
-      description: validatedInput.description,
-      location: {
-        latitude: 0,
-        longitude: 0
-      },
-      contact: validatedInput.contactUrl
-    }));
+    dispatch(postNewPost(validatedInput));
   };
 
   return (
