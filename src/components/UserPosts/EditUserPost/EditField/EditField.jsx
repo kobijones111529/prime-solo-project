@@ -13,7 +13,7 @@ function EditField({ defaultValue, onChange, edit, noEdit }) {
     return (
       <Edit
         value={input}
-        onChange={value => {
+        onChange={(/** @type {string} */ value) => {
           setInput(value);
           onChange()
         }}
