@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-
 import styles from './Post.module.css';
+import React from 'react';
 
 function Post({ id, type, plantName, imageUrl }) {
   return (

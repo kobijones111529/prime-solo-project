@@ -1,13 +1,15 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchPost } from "../../../redux/sagas/post";
-import { PostState } from "../../../redux/reducers/post";
+import React from "react";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
 function ViewUserPost() {
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const post = useSelector(store => store.post);
+  /** @type {{ id: string }} */
+  const params = useParams();
+  const id = Number(params.id);
+  const dispatch = useAppDispatch();
+  const post = useAppSelector(store => store.post);
 
   useEffect(() => {
     dispatch(fetchPost(id));
@@ -15,10 +17,10 @@ function ViewUserPost() {
 
   const showPost = () => {
     switch (post.tag) {
-      case PostState.None:
-      case PostState.Loading:
+      case 'None':
+      case 'Loading':
         return <p>Loading...</p>;
-      case PostState.Post:
+      case 'Some':
         const p = post.post;
         return (
           <>

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../../redux/sagas/registration';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+
+/**
+ * @typedef {import('react')} React
+ */
 
 function RegisterForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const errors = useSelector((store) => store.errors);
-  const dispatch = useDispatch();
+  const errors = useAppSelector((store) => store.errors);
+  const dispatch = useAppDispatch();
 
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   const registerUser = (event) => {
     event.preventDefault();
 
@@ -20,9 +25,9 @@ function RegisterForm() {
   return (
     <form className="formPanel" onSubmit={registerUser}>
       <h2>Register User</h2>
-      {errors.registrationMessage && (
+      {errors.registration && (
         <h3 className="alert" role="alert">
-          {errors.registrationMessage}
+          {errors.registration}
         </h3>
       )}
       <div>

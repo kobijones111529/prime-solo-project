@@ -22,13 +22,13 @@ import './App.css';
 import ViewUserPost from '../UserPosts/ViewUserPost/ViewUserPost';
 import CreatePost from '../CreatePost/CreatePost';
 import { fetchUser as fetchUser } from '../../redux/sagas/user';
-import { UserState } from '../../redux/reducers/user';
 import EditUserPost from '../UserPosts/EditUserPost/EditUserPost';
+import { useAppSelector } from '../../redux/hooks';
 
 function App() {
   const dispatch = useDispatch();
 
-  const user = useSelector(store => store.user);
+  const user = useAppSelector(store => store.user);
 
   useEffect(() => {
     dispatch(fetchUser());
@@ -65,7 +65,7 @@ function App() {
             exact
             path="/login"
           >
-            {user.tag === UserState.User ?
+            {user.tag === 'Some' ?
               // If the user is already logged in, 
               // redirect to the /user page
               <Redirect to="/feed" />
@@ -79,7 +79,7 @@ function App() {
             exact
             path="/registration"
           >
-            {user.tag === UserState.User ?
+            {user.tag === 'Some' ?
               // If the user is already logged in, 
               // redirect them to the /user page
               <Redirect to="/" />

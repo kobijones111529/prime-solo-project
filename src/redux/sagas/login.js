@@ -4,22 +4,32 @@ import { fetchUser as fetchUser } from "./user";
 import { clear as unsetUser } from "../reducers/user";
 import { clear as clearLoginError, unspecified as loginError } from "../reducers/errors/login";
 
+/**
+ * @typedef {import("../../../types/user").LoginCredentials} LoginCredentials
+ */
+
+/**
+ * @param {string} name
+ */
 const qualifiedName = name => `saga/${name}`;
 
 const sagas = {
-  login: { type: qualifiedName('login'), saga: function*({ payload: credentials }) {
-    try {
-      yield put(clearLoginError());
-      yield axios.post('/api/user/login', credentials, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      });
-      yield put(fetchUser());
-    } catch (err) {
-      console.error('uh oh');
-      yield put(loginError());
+  login: {
+    type: qualifiedName('login'),
+    saga: function*({ payload: credentials }) {
+      try {
+        yield put(clearLoginError());
+        yield axios.post('/api/user/login', credentials, {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+        });
+        yield put(fetchUser());
+      } catch (err) {
+        console.error('uh oh');
+        yield put(loginError());
+      }
     }
-  } },
+  },
   logout: { type: qualifiedName('logout'), saga: function*() {
     try {
       yield axios.post('/api/user/logout', {
@@ -32,6 +42,9 @@ const sagas = {
   } }
 };
 
+/**
+ * @param {LoginCredentials} credentials
+ */
 export const login = credentials => ({
   type: sagas.login.type,
   payload: credentials

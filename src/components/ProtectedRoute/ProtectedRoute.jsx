@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import React from 'react';
+import { Route } from 'react-router-dom';
 import LoginPage from '../LoginPage/LoginPage';
-import {useSelector} from 'react-redux';
-import { UserState } from '../../redux/reducers/user';
+import { useAppSelector } from '../../redux/hooks';
 
 // A Custom Wrapper Component -- This will keep our code DRY.
 // Responsible for watching redux state, and returning an appropriate component
@@ -14,12 +13,12 @@ import { UserState } from '../../redux/reducers/user';
 // by checking req.isAuthenticated for authentication
 // and by checking req.user for authorization
 
-function ProtectedRoute({ component, children, ...props }) {
-  const user = useSelector((store) => store.user);
+function ProtectedRoute({ children, ...props }) {
+  const user = useAppSelector((store) => store.user);
 
   // Component may be passed in as a "component" prop,
   // or as a child component.
-  const ProtectedComponent = component || (() => children);
+  const ProtectedComponent = () => children;
 
   // We return a Route component that gets added to our list of routes
   return (
@@ -28,7 +27,7 @@ function ProtectedRoute({ component, children, ...props }) {
       // are now passed along to the 'Route' Component
       {...props}
     >
-      {user.tag === UserState.User ?
+      {user.tag === 'Some' ?
         // If the user is logged in, show the protected component
         <ProtectedComponent />
         :

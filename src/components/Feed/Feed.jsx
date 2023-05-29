@@ -1,12 +1,15 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
 import Post from "./Post/Post";
 import { fetchPosts } from "../../redux/sagas/posts";
-import { PostsState } from "../../redux/reducers/posts";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+
+/**
+ * @typedef {import("../../../types/posts").Post} Post
+ */
 
 function Feed() {
-  const dispatch = useDispatch();
-  const feed = useSelector(store => store.posts);
+  const dispatch = useAppDispatch();
+  const feed = useAppSelector(store => store.posts);
 
   useEffect(() => {
     dispatch(fetchPosts());
@@ -14,10 +17,13 @@ function Feed() {
 
   const showFeed = () => {
     switch (feed.tag) {
-      case PostsState.Posts:
+      case 'None':
+      case 'Loading':
+        return <p>Loading...</p>;
+      case 'Some':
         return (
           <ol>
-            {feed.posts.map(post =>
+            {feed.posts.map((/** @type {Post} */ post) =>
               <Post
                 key={post.id}
                 type={post.type}
@@ -29,10 +35,10 @@ function Feed() {
             )}
           </ol>
         );
-      case PostsState.Loading:
-        return <p>Loading...</p>;
-      default:
+      case 'Error':
         return <p>Error loading posts: {feed.error}</p>
+      default:
+        return <p>{'Something went wrong :('}</p>;
     }
   }
 

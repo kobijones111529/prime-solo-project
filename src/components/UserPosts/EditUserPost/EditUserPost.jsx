@@ -1,28 +1,48 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPost } from "../../../redux/sagas/post";
-import { PostState } from "../../../redux/reducers/post";
+import { editPost } from "../../../redux/sagas/posts";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+
+/**
+ * @typedef {import("../../../../types/posts").EditPost} EditPost
+ * @typedef {import('react')} React
+ */
+
+/**
+ * @template T
+ * @typedef {import("../../../hooks/useReduxStore").useState<T>} useState
+*/
 
 function EditUserPost() {
-  const dispatch = useDispatch();
-  const post = useSelector(store => store.post);
-  const user = useSelector(store => store.user);
-  const { id } = useParams();
+  const dispatch = useAppDispatch();
+  const post = useAppSelector(store => store.post);
+  const user = useAppSelector(store => store.user);
+  /** @type {{ id: string }} */
+  const params = useParams();
+  const id = Number(params.id);
 
-  /** @type {['offer' | 'request' | undefined, React.Dispatch<React.SetStateAction<'offer' | 'request' | undefined>>]} */
+  /** @type {useState<'offer' | 'request' | undefined>} */
   const [postTypeInput, setPostTypeInput] = useState();
+  /** @type {useState<string | undefined>} */
   const [imageUrlInput, setImageUrlInput] = useState();
+  /** @type {useState<string | undefined>} */
   const [plantNameInput, setPlantNameInput] = useState();
+  /** @type {useState<string | undefined>} */
   const [descriptionInput, setDescriptionInput] = useState();
+  /** @type {useState<string | undefined>} */
   const [contactInput, setContactInput] = useState();
 
+  /** @type {useState<string | null>} */
   const [imageUrl, setImageUrl] = useState(null)
 
   useEffect(() => {
     dispatch(fetchPost(id));
   }, [user, id]);
 
+  /**
+   * @param {string} url 
+   */
   const uploadImage = url => {
     const trimmed = url.trim();
     if (trimmed.length > 0) {
@@ -32,7 +52,11 @@ function EditUserPost() {
     }
   };
 
-  const handleSubmit = () => {
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
+  const handleSubmit = event => {
+    event.preventDefault();
+
+    /** @type {EditPost} */
     const data = {};
     if (postTypeInput !== undefined) {
       data.type = postTypeInput;
@@ -47,18 +71,18 @@ function EditUserPost() {
       data.description = descriptionInput;
     }
     if (contactInput !== undefined) {
-      data.contactUrl = contactInput;
+      data.contact = contactInput;
     }
 
-    console.log('TODO: submit edit:', data);
+    dispatch(editPost(id, data));
   };
 
   const showPost = () => {
     switch (post.tag) {
-      case PostState.None:
-      case PostState.Loading:
+      case 'None':
+      case 'Loading':
         return <p>Loading...</p>;
-      case PostState.Post:
+      case 'Some':
         const data = post.post;
         return (
           <form onSubmit={handleSubmit}>
@@ -68,8 +92,11 @@ function EditUserPost() {
                 Offer
                 <input
                   type="radio"
-                  value="offer"
-                  onChange={event => setPostTypeInput(event.target.value)}
+                  onChange={event => {
+                    if (event.target.checked) {
+                      setPostTypeInput('offer');
+                    }
+                  }}
                   checked={postTypeInput === 'offer' || (postTypeInput === undefined && data.type === 'offer')}
                 />
               </label>
@@ -77,8 +104,11 @@ function EditUserPost() {
                 Request
                 <input
                   type="radio"
-                  value="request"
-                  onChange={event => setPostTypeInput(event.target.value)}
+                  onChange={event => {
+                    if (event.target.checked) {
+                      setPostTypeInput('request');
+                    }
+                  }}
                   checked={postTypeInput === 'request' || (postTypeInput === undefined && data.type === 'request')}
                 />
               </label>
@@ -87,8 +117,8 @@ function EditUserPost() {
             <input type="text" placeholder="Image URL" value={imageUrlInput || data.image_url} onChange={e => setImageUrlInput(e.target.value)} />
             <button type="button" onClick={() => uploadImage(imageUrlInput)} disabled={!imageUrlInput}>Upload</button>
             <input type="text" placeholder="Plant name" value={plantNameInput || data.plant_name} onChange={e => setPlantNameInput(e.target.value)} />
-            <textarea type="text" placeholder="Description" value={descriptionInput || data.description} onChange={e => setDescriptionInput(e.target.value)} />
-            <input type="text" placeholder="Contact" value={contactInput || data.contact_url} onChange={e => setContactInput(e.target.value)} />
+            <textarea placeholder="Description" value={descriptionInput || data.description} onChange={e => setDescriptionInput(e.target.value)} />
+            <input type="text" placeholder="Contact" value={contactInput === undefined ? data.contact_url : contactInput} onChange={e => setContactInput(e.target.value)} />
             <button type="submit">Save changes</button>
             <button type="reset">Discard changes</button>
           </form>
