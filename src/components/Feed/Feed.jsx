@@ -28,8 +28,8 @@ function Feed() {
                 key={post.id}
                 type={post.type}
                 plantName={post.plant_name}
-                imageUrl={post.image_url}
-                description={post.description}
+                {...(post.image_url && { imageUrl: post.image_url })}
+                {...(post.description && { description: post.description })}
                 location={{ latitude: post.latitude, longitude: post.longitude }}
               />
             )}

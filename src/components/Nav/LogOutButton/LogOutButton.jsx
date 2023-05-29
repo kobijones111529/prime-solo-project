@@ -2,6 +2,14 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/sagas/login'
 
+/**
+ * @typedef Props
+ * @property {string} className
+ */
+
+/**
+ * @param {Props} props
+ */
 function LogOutButton({ className }) {
   const dispatch = useDispatch();
   return (
