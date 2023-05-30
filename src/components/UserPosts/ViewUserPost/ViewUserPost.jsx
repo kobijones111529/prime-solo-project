@@ -1,8 +1,11 @@
-import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
 import { fetchPost } from "../../../redux/sagas/post";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { deletePost } from "redux/sagas/posts";
+import { never } from "util/never";
+import { clear as clearDeletePostStatus } from "redux/reducers/errors/deletePost";
 
 function ViewUserPost() {
   /** @type {{ id: string }} */
@@ -10,10 +13,43 @@ function ViewUserPost() {
   const id = Number(params.id);
   const dispatch = useAppDispatch();
   const post = useAppSelector(store => store.post);
+  const deleteError = useAppSelector(store => store.errors.deletePost);
+  const history = useHistory();
+
+  const [awaitingDeleteStatus, setAwaitingDeleteStatus] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPost(id));
   }, [id]);
+
+  useEffect(() => {
+    if (awaitingDeleteStatus) {
+      const status = deleteError.get(id);
+      switch (status?.tag) {
+        case 'success':
+          dispatch(clearDeletePostStatus(id));
+          history.push('/posts');
+          break;
+        case 'pending':
+          break;
+        case 'error':
+          alert(`Error deleting post: ${status.error}`);
+          setAwaitingDeleteStatus(false);
+          dispatch(clearDeletePostStatus(id));
+          break;
+        case undefined:
+          setAwaitingDeleteStatus(false);
+          break;
+        default:
+          never(status);
+      }
+    }
+  }, [deleteError]);
+
+  const handleDelete = () => {
+    dispatch(deletePost(id));
+    setAwaitingDeleteStatus(true);
+  };
 
   const showPost = () => {
     switch (post.tag) {
@@ -32,6 +68,7 @@ function ViewUserPost() {
             <Link to={`/posts/${id}/edit`}>
               <button>Edit</button>
             </Link>
+            <button onClick={handleDelete}>Delete</button>
           </>
         );
       default:
