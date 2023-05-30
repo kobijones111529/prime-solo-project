@@ -39,6 +39,7 @@ function ViewUserPost() {
           break;
         case undefined:
           setAwaitingDeleteStatus(false);
+          dispatch(fetchPost(id))
           break;
         default:
           never(status);

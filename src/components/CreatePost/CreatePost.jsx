@@ -1,5 +1,8 @@
-import React, { useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "redux/hooks";
+import { never } from "util/never";
 import { postNewPost } from "../../redux/sagas/posts";
 
 /**
@@ -7,7 +10,9 @@ import { postNewPost } from "../../redux/sagas/posts";
  */
 
 function CreatePost() {
-  const dispatch = useDispatch();
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const createStatus = useAppSelector(store => store.errors.createPost);
 
   /** @type {['offer' | 'request' | undefined, React.Dispatch<React.SetStateAction<'offer' | 'request' | undefined>>]} */
   const [type, setType] = useState();
@@ -16,20 +21,28 @@ function CreatePost() {
   const [description, setDescription] = useState('');
   const [contactUrl, setContactUrl] = useState('');
 
-  const input = useMemo(() => {
-    /**
-     * @property {'offer' | 'request' | undefined} type
-     */
-    const input = {};
+  const [awaitingCreateStatus, setAwaitingCreateStatus] = useState(false);
 
-    input.type = type;
-    if (plantName.trim() !== '') input.plantName = plantName.trim();
-    if (imageUrl.trim() !== '') input.imageUrl = imageUrl.trim();
-    if (description.trim() !== '') input.description = description.trim();
-    if (contactUrl.trim() !== '') input.contactUrl = contactUrl.trim();
-
-    return input;
-  }, [type, plantName, imageUrl, description, contactUrl]);
+  useEffect(() => {
+    if (awaitingCreateStatus) {
+      switch (createStatus?.tag) {
+        case 'success':
+          history.push('/posts');
+          break;
+        case 'pending':
+          // Keep waiting
+          break;
+        case 'error':
+          alert(`Error creating post: ${createStatus.error}`);
+          break;
+        case undefined:
+          // Should be unreachable...
+          break;
+        default:
+          never(createStatus);
+      }
+    }
+  }, [createStatus]);
 
   const validatedInput = useMemo(
     /** @returns {NewPost | null} */
@@ -91,6 +104,7 @@ function CreatePost() {
     }
 
     dispatch(postNewPost(validatedInput));
+    setAwaitingCreateStatus(true);
   };
 
   return (
