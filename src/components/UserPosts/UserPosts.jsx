@@ -3,12 +3,14 @@ import Post from "./Post/Post";
 import { fetchUserPosts } from "../../redux/sagas/posts";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useHistory } from "react-router-dom";
 
 /**
  * @typedef {import("../../../types/posts").Post} Post
  */
 
 function UserPosts() {
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const user = useAppSelector(store => store.user);
   const posts = useAppSelector(store => store.posts);
@@ -16,6 +18,10 @@ function UserPosts() {
   useEffect(() => {
     dispatch(fetchUserPosts());
   }, [user]);
+
+  const handleCreatePost = () => {
+    history.push('/posts/new');
+  };
 
   const showPosts = () => {
     switch (posts.tag) {
@@ -44,6 +50,9 @@ function UserPosts() {
 
   return (
     <div>
+      <div>
+        <button onClick={handleCreatePost}>Create post</button>
+      </div>
       {showPosts()}
     </div>
   );

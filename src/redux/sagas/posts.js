@@ -5,8 +5,16 @@ import {
   success as deletePostSuccess,
   error as deletePostError
 } from "redux/reducers/errors/deletePost";
-import { error, loading as loadingPosts, set as setPosts } from '../reducers/posts'
-import { never } from 'util/never'
+import {
+  error as postsError,
+  loading as loadingPosts,
+  set as setPosts
+} from '../reducers/posts'
+import {
+  error as createPostError,
+  pending as pendingCreatePost,
+  success as createPostSuccess
+} from "redux/reducers/errors/createPost";
 
 /**
  * @typedef {import("../../../types/posts").Post} Post
@@ -27,7 +35,7 @@ const sagas = {
       const { data: posts } = yield axios.get('/api/posts');
       yield put(setPosts(posts));
     } catch (err) {
-      yield put(error(err));
+      yield put(postsError(err));
       console.error(err);
     }
   } },
@@ -38,7 +46,7 @@ const sagas = {
       const { data: posts } = yield axios.get('/api/user/posts');
       yield put(setPosts(posts));
     } catch (err) {
-      yield put(error(err));
+      yield put(postsError(err));
       console.error(err);
     }
   } },
@@ -48,14 +56,27 @@ const sagas = {
       /** @type {{ payload: NewPost }} */
       { payload: data }
     ) {
+      yield put(pendingCreatePost());
       try {
         yield axios.post('/api/posts', data, {
           withCredentials: true
         });
-        yield put(fetchPosts());
       } catch (err) {
         console.error(err);
+        if (axios.isAxiosError(err)) {
+          switch (err.response?.status) {
+            case 401:
+              yield put(createPostError('unauthenticated'));
+              break;
+            default:
+              yield put(createPostError('unspecified'));
+          }
+        } else {
+          yield put(createPostError('unspecified'));
+        }
       }
+      yield put(createPostSuccess());
+      yield put(fetchPosts());
     }
   },
   editPost: { type: qualifiedName('edit'), saga: function*(
@@ -82,8 +103,6 @@ const sagas = {
         yield axios.delete(`/api/posts/${id}`, {
           withCredentials: true
         });
-        yield put(deletePostSuccess(id));
-        yield put(fetchPosts());
       } catch (err) {
         if (axios.isAxiosError(err)) {
           console.error(err);
@@ -97,10 +116,15 @@ const sagas = {
             case 404:
               yield put(deletePostError({ id, error: 'not_found' }));
               break;
+            default:
+              yield put(deletePostError({ id, error: 'unspecified' }));
           }
+        } else {
+          yield put(deletePostError({ id, error: 'unspecified' }));
         }
-        yield put(deletePostError({ id, error: 'unspecified' }));
       }
+      yield put(deletePostSuccess(id));
+      yield put(fetchPosts());
     }
   }
 };
