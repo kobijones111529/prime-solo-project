@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "module": "AMD",
     "target": "ESNext",
     "jsx": "react",
     "checkJs": true,
@@ -12,7 +11,8 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "strict": true,
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "outDir": "built"
   },
-  "include": ["src", "server"]
+  "include": ["server"]
 }

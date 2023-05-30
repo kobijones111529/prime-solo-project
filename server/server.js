@@ -30,7 +30,7 @@ app.use('/api/posts', postsRouter);
 app.use(express.static('build'));
 
 // App Set //
-const PORT = process.env.SERVER_PORT || process.env.PORT || 5000;
+const PORT = process.env['SERVER_PORT'] || process.env['PORT'] || 5000;
 
 /** Listen * */
 app.listen(PORT, () => {

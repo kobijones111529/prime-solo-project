@@ -1,3 +1,8 @@
+/**
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 const rejectUnauthenticated = (req, res, next) => {
   // check if logged in
   if (req.isAuthenticated()) {

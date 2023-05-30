@@ -1,6 +1,12 @@
 import axios from "axios";
 import { put, takeEvery, takeLatest } from "redux-saga/effects";
+import {
+  pending as pendingDeletePost,
+  success as deletePostSuccess,
+  error as deletePostError
+} from "redux/reducers/errors/deletePost";
 import { error, loading as loadingPosts, set as setPosts } from '../reducers/posts'
+import { never } from 'util/never'
 
 /**
  * @typedef {import("../../../types/posts").Post} Post
@@ -64,7 +70,39 @@ const sagas = {
     } catch (err) {
       console.error(err);
     }
-  } }
+  } },
+  deletePost: {
+    type: qualifiedName('delete'),
+    saga: function*(
+      /** @type {{ payload: { id: number } }} */
+      { payload: { id } }
+    ) {
+      yield put(pendingDeletePost(id));
+      try {
+        yield axios.delete(`/api/posts/${id}`, {
+          withCredentials: true
+        });
+        yield put(deletePostSuccess(id));
+        yield put(fetchPosts());
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          console.error(err);
+          switch (err.response?.status) {
+            case 401:
+              yield put(deletePostError({ id, error: 'unauthenticated' }));
+              break;
+            case 403:
+              yield put(deletePostError({ id, error: 'unauthorized' }));
+              break;
+            case 404:
+              yield put(deletePostError({ id, error: 'not_found' }));
+              break;
+          }
+        }
+        yield put(deletePostError({ id, error: 'unspecified' }));
+      }
+    }
+  }
 };
 
 export const fetchPosts = () => ({ type: sagas.fetchPosts.type });
@@ -78,10 +116,15 @@ export const postNewPost = post => ({ type: sagas.postNewPost.type, payload: pos
  * @param {EditPost} data
  */
 export const editPost = (id, data) => ({ type: sagas.editPost.type, payload: { id, data } });
+/**
+ * @param {number} id
+ */
+export const deletePost = id => ({ type: sagas.deletePost.type, payload: { id } });
 
 export default function*() {
   yield takeLatest(sagas.fetchPosts.type, sagas.fetchPosts.saga);
   yield takeLatest(sagas.fetchUserPosts.type, sagas.fetchUserPosts.saga);
   yield takeEvery(sagas.postNewPost.type, sagas.postNewPost.saga);
   yield takeEvery(sagas.editPost.type, sagas.editPost.saga);
+  yield takeEvery(sagas.deletePost.type, sagas.deletePost.saga);
 }
