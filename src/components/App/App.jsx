@@ -11,16 +11,16 @@ import ProtectedRoute from 'components/ProtectedRoute/ProtectedRoute';
 import Nav from 'components/Nav/Nav';
 import Footer from 'components/Footer/Footer';
 
-import Feed from 'components/Feed/Feed';
-import UserPosts from 'components/UserPosts/UserPosts';
+import Feed from 'components/Posts/Feed/Feed';
+import UserPosts from 'components/Posts/UserPosts/ViewUserPosts/UserPosts';
 import LoginPage from 'components/LoginPage/LoginPage';
 import RegisterPage from 'components/RegisterPage/RegisterPage';
 
 import './App.css';
-import ViewUserPost from 'components/UserPosts/ViewUserPost/ViewUserPost';
-import CreatePost from 'components/CreatePost/CreatePost';
+import ViewUserPost from 'components/Posts/UserPosts/ViewUserPost/ViewUserPost';
+import CreatePost from 'components/Posts/UserPosts/CreatePost/CreatePost';
 import { fetchUser as fetchUser } from 'redux/sagas/user';
-import EditUserPost from 'components/UserPosts/EditUserPost/EditUserPost';
+import EditUserPost from 'components/Posts/UserPosts/EditPost/EditPost';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 
 function App() {

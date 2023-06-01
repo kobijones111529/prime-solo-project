@@ -12,8 +12,9 @@ const userRouter = require('./routes/user.router');
 const postsRouter = require('./routes/posts.router');
 
 // Body parser middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.text());
 
 // Passport Session Configuration //
 app.use(sessionMiddleware);

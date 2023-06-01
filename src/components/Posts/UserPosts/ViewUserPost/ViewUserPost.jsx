@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
-import { fetchPost } from "../../../redux/sagas/post";
+import { fetchPost } from "../../../../redux/sagas/post";
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
 import { deletePost } from "redux/sagas/posts";
 import { never } from "util/never";
 import { clear as clearDeletePostStatus } from "redux/reducers/errors/deletePost";

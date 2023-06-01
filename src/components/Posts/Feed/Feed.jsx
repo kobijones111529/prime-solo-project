@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import Post from "./Post/Post";
-import { fetchPosts } from "../../redux/sagas/posts";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { fetchPosts } from "../../../redux/sagas/posts";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
 /**
- * @typedef {import("../../../types/posts").Post} Post
+ * @typedef {import("../../../../types/posts").Post} Post
  */
 
 function Feed() {

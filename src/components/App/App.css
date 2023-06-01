@@ -110,3 +110,8 @@ input {
   margin: 5px;
   margin-bottom: 10px;
 }
+
+.leaflet-div-icon {
+  background: red;
+  border: none;
+}
