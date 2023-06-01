@@ -5,8 +5,9 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 
 import App from 'components/App/App';
+import { rootSelector } from 'constants/index';
 
-const rootElement = document.getElementById('react-root');
+const rootElement = document.querySelector(rootSelector);
 if (!rootElement) {
   throw new Error('Root element not found');
 }

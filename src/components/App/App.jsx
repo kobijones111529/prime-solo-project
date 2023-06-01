@@ -22,6 +22,7 @@ import CreatePost from 'components/CreatePost/CreatePost';
 import { fetchUser as fetchUser } from 'redux/sagas/user';
 import EditUserPost from 'components/UserPosts/EditUserPost/EditUserPost';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
+import axios from 'axios';
 
 function App() {
   const dispatch = useAppDispatch();
