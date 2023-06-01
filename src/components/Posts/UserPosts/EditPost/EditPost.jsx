@@ -1,19 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchPost } from "../../../redux/sagas/post";
-import { editPost } from "../../../redux/sagas/posts";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { never } from "../../../util/never";
+import { fetchPost } from "../../../../redux/sagas/post";
+import { editPost } from "../../../../redux/sagas/posts";
+import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
+import { never } from "../../../../util/never";
+import PreviewMap from "components/Posts/PreviewMap/PreviewMap";
+
+import styles from './EditPost.module.css';
+import SelectLocationModal from "components/Posts/SelectLocationModal/SelectLocationModal";
 
 /**
- * @typedef {import('../../../../types/posts').Post} Post
- * @typedef {import("../../../../types/posts").EditPost} EditPost
+ * @typedef {import('../../../../../types/posts').Post} Post
+ * @typedef {import("../../../../../types/posts").EditPost} EditPost
  * @typedef {import('react')} React
  */
 
 /**
  * @template T
- * @typedef {import("../../../hooks/useReduxStore").useState<T>} useState
+ * @typedef {import("../../../../hooks/useReduxStore").useState<T>} useState
 */
 
 /**
@@ -52,6 +56,10 @@ function EditUserPost() {
     /** @returns {EditMode<string>} */
     () => ({ tag: 'no_edit' })
   );
+  const [locationEdit, setLocationEdit] = useState(
+    /** @returns {EditMode<[number, number]>} */
+    () => ({ tag: 'no_edit' })
+  );
   const [contactEdit, setContactEdit] = useState(
     /** @returns {EditMode<string>} */
     () => ({ tag: 'no_edit' })
@@ -78,8 +86,8 @@ function EditUserPost() {
 
   /** @type {useState<'offer' | 'request' | undefined>} */
   const [postTypeInput, setPostTypeInput] = useState();
-  /** @type {useState<string | undefined>} */
-  const [contactInput, setContactInput] = useState();
+
+  const [mapOpen, setMapOpen] = useState(false);
 
   const loadedImage = useMemo(() => {
     if (imageUrlEdit.tag === 'edit') {
@@ -99,47 +107,45 @@ function EditUserPost() {
   const handleSubmit = event => {
     event.preventDefault();
 
-    /** @type {EditPost} */
-    const data = {};
-    if (postTypeInput !== undefined) {
-      data.type = postTypeInput;
-    }
-    if (plantNameEdit.tag === 'edit') {
-      const trimmed = plantNameEdit.value.trim();
-      if (trimmed.length < 1) {
-        alert('Plant name required');
-        return;
-      } else {
-        data.plantName = trimmed;
-      }
-    }
-    if (loadedImage !== null) {
-      const trimmed = loadedImage.trim();
-      if (trimmed.length < 1) {
-        data.imageUrl = null
-      } else {
-        data.imageUrl = trimmed;
-      }
-    }
-    if (descriptionEdit.tag === 'edit') {
-      const trimmed = descriptionEdit.value.trim();
-      if (trimmed.length < 1) {
-        data.description = null;
-      } else {
-        data.description = trimmed;
-      }
-    }
-    if (contactEdit.tag === 'edit') {
-      const trimmed = contactEdit.value.trim();
-      if (trimmed.length < 1) {
-        alert('Contact method required');
-        return;
-      } else {
-        data.contact = trimmed;
-      }
+    /**
+     * @param {string} value
+     */
+    const trim = value => {
+      const trimmed = value.trim();
+      return trimmed !== '' && trimmed || null;
+    };
+
+    const postType = postTypeInput
+    const plantName = plantNameEdit.tag === 'edit' ? trim(plantNameEdit.value) : undefined;
+    const imageUrl = imageUrlEdit.tag === 'edit' ? imageUrlEdit.value.loaded : undefined;
+    const description = descriptionEdit.tag === 'edit' ? trim(descriptionEdit.value) : undefined;
+    const location = locationEdit.tag === 'edit' && locationEdit.value || undefined;
+    const contact = contactEdit.tag === 'edit' ? trim(contactEdit.value) : undefined;
+
+    if (plantName === null) {
+      alert('Plant name required');
+      return;
     }
 
-    dispatch(editPost(id, data));
+    if (contact === null) {
+      alert('Contact information required');
+      return;
+    }
+
+    dispatch(editPost(id, {
+      ...(postType !== undefined && { type: postType }),
+      ...(plantName !== undefined && { plantName: plantName }),
+      ...(imageUrl !== undefined && { imageUrl: imageUrl }),
+      ...(description !== undefined && { description: description }),
+      ...(location !== undefined &&
+        {
+          location: {
+            latitude: location[0],
+            longitude: location[1]
+          }
+        }),
+      ...(contact !== undefined && { contact: contact })
+    }));
   };
 
   /**
@@ -328,6 +334,29 @@ function EditUserPost() {
   };
 
   /**
+   * @param {[number, number]} defaultValue
+   */
+  const showEditLocation = defaultValue => {
+    const location =
+      locationEdit.tag === 'edit' && locationEdit.value || defaultValue;
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          setMapOpen(true);
+        }}
+        className={styles['map-button']}
+      >
+        <PreviewMap
+          center={{ latitude: location[0], longitude: location[1] }}
+          zoom={10}
+        />
+      </button>
+    );
+  };
+
+  /**
    * @param {Post} post
    */
   const showEditContact = post => {
@@ -389,12 +418,13 @@ function EditUserPost() {
       case 'Some':
         const data = post.post;
         return (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className={styles['form']}>
             {loadedImage ? <img src={loadedImage} /> : <></>}
             {showEditImageUrl(data)}
             {showEditPostType(data)}
             {showEditPlantName(data)}
             {showEditDescription(data)}
+            {showEditLocation([data.latitude, data.longitude])}
             {showEditContact(data)}
             <button type="submit">Save changes</button>
             <button type="reset">Discard changes</button>
@@ -408,6 +438,18 @@ function EditUserPost() {
   return (
     <div>
       {showPost()}
+      {post.tag === 'Some' &&
+        <SelectLocationModal
+          isOpen={mapOpen}
+          onClose={location => {
+            setMapOpen(false)
+            if (location) {
+              setLocationEdit({ tag: 'edit', value: location });
+            }
+          }}
+          startLocation={(locationEdit.tag === 'edit' && locationEdit.value) || [post.post.latitude, post.post.longitude]}
+        />
+      }
     </div>
   );
 }

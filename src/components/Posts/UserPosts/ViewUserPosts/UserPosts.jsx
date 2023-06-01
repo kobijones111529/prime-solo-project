@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import Post from "./Post/Post";
-import { fetchUserPosts } from "../../redux/sagas/posts";
+import { fetchUserPosts } from "../../../../redux/sagas/posts";
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
 import { useHistory } from "react-router-dom";
 
 /**
- * @typedef {import("../../../types/posts").Post} Post
+ * @typedef {import("../../../../../types/posts").Post} Post
  */
 
 function UserPosts() {

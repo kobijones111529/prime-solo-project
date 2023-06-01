@@ -6,8 +6,8 @@ import Modal from 'react-modal'
 import { useHistory } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "redux/hooks";
 import { never } from "util/never";
-import { postNewPost } from "../../redux/sagas/posts";
-import SelectLocationModal from "./SelectLocationModal/SelectLocationModal";
+import { postNewPost } from "../../../../redux/sagas/posts";
+import SelectLocationModal from "../../SelectLocationModal/SelectLocationModal";
 import styles from './CreatePost.module.css'
 
 Modal.setAppElement(rootSelector);
@@ -32,7 +32,7 @@ function Track(props) {
 }
 
 /**
- * @typedef {import("../../../types/posts").NewPost} NewPost
+ * @typedef {import("../../../../../types/posts").NewPost} NewPost
  */
 
 function CreatePost() {
@@ -221,36 +221,16 @@ function CreatePost() {
         />
         <button type="submit">Post</button>
       </form>
-      {/* <Modal
-        className={styles['modal']}
+      <SelectLocationModal
         isOpen={locationModalOpen}
-        contentLabel="Select location"
-        onRequestClose={() => setLocationModalOpen(false)}
-        shouldCloseOnOverlayClick={false}
-        shouldCloseOnEsc={false}
-        style={{
-          overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.25)'
+        onClose={location => {
+          setLocationModalOpen(false)
+          if (location) {
+            setLocation({ latitude: location[0], longitude: location[1] });
           }
         }}
-      >
-        <MapContainer
-          className={mapStyles['map']}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-          />
-        </MapContainer>
-        <button onClick={() => setLocationModalOpen(false)}>Confirm</button>
-        <button onClick={() => setLocationModalOpen(false)}>Cancel</button>
-      </Modal> */}
-      <SelectLocationModal isOpen={locationModalOpen} onClose={location => {
-        setLocationModalOpen(false)
-        if (location) {
-          setLocation({ latitude: location[0], longitude: location[1] });
-        }
-      }} startLocation={[location.latitude, location.longitude]} />
+        startLocation={[location.latitude, location.longitude]}
+      />
     </div>
   );
 }
