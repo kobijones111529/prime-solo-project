@@ -3,6 +3,7 @@ import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import TrackCenter from './TrackCenter';
 
 import styles from './PreviewMap.module.css';
+import leafletStyles from '../../../styles/leaflet-defaults.module.css';
 
 /**
  * @typedef Location
@@ -23,7 +24,14 @@ function PreviewMap({ center, zoom }) {
   return (
     <MapContainer
       zoomControl={false}
-      className={`${styles['map']}`}
+      className={
+        [
+          styles['map'],
+          leafletStyles['marker'],
+          leafletStyles['attribution']
+        ]
+          .join(' ')
+      }
       center={[center.latitude, center.longitude]}
       zoom={zoom}
       doubleClickZoom={false}

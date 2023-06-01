@@ -51,17 +51,9 @@
   background-color: white;
 }
 
-.map a {
-  outline: none;
-}
-
 .map:focus {
   outline-offset: 0;
   outline: 1px solid rgb(21, 166, 113);
-}
-
-.marker:focus {
-  border: 2px solid red;
 }
 
 .button-container {

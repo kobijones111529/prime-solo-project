@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet';
 import ReactModal from 'react-modal';
 import styles from './SelectLocationModal.module.css';
-import './SelectLocationModal.css';
+import leafletDefaults from '../../../styles/leaflet-defaults.module.css'
 
 ReactModal.setAppElement(rootSelector);
 
@@ -97,7 +97,14 @@ function SelectLocationModal({ isOpen, onClose, startLocation }) {
       <div className={styles['content']}>
         <MapContainer
           closePopupOnClick={false} // Handle this manually
-          className={styles['map']}
+          className={
+            [
+              styles['map'],
+              leafletDefaults['marker'],
+              leafletDefaults['attribution']
+            ]
+              .join(' ')
+          }
           center={location || startLocation}
           zoom={10}
           zoomControl={false}

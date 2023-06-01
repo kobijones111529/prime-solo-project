@@ -1,4 +1,5 @@
 import OpenLayersMap from "components/OpenLayersMap/OpenLayersMap";
+import PreviewMap from "components/Posts/PreviewMap/PreviewMap";
 import { rootSelector } from "constants/index";
 import React, { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
@@ -194,23 +195,13 @@ function CreatePost() {
           className={`${styles['map-preview-button']} ${styles['map-preview-container']}`}
           onClick={() => setLocationModalOpen(true)}
         >
-          <MapContainer
-            zoomControl={false}
-            className={`${styles['map-preview']}`}
-            center={[location.latitude, location.longitude]}
+          <PreviewMap
+            center={{
+              latitude: location.latitude,
+              longitude: location.longitude
+            }}
             zoom={10}
-            doubleClickZoom={false}
-            scrollWheelZoom={false}
-            dragging={false}
-            keyboard={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-            />
-            <Track center={[location.latitude, location.longitude]} />
-            <Marker position={[location.latitude, location.longitude]} />
-          </MapContainer>
+          />
         </button>
         <input
           type="text"
