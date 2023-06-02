@@ -23,22 +23,43 @@ import {
  */
 
 /**
+ * @typedef {import('../../../types/filters').Filters} Filters
+ * @typedef {import('../../../types/filters').Query} FiltersQuery
+ */
+
+/**
  * @param {string} name
  */
 const qualifiedName = name => `saga/posts/${name}`;
 
 const sagas = {
-  fetchPosts: { type: qualifiedName('fetch'), saga: function*() {
-    try {
-      yield put(loadingPosts());
-      /** @type {{ data: Post[] }} */
-      const { data: posts } = yield axios.get('/api/posts');
-      yield put(setPosts(posts));
-    } catch (err) {
-      yield put(postsError(err));
-      console.error(err);
+  fetchPosts: {
+    type: qualifiedName('fetch'),
+    saga: function*(
+      /** @type {{ payload: Filters }} */
+      { payload: filters }
+    ) {
+      try {
+        yield put(loadingPosts());
+
+        /** @type {FiltersQuery} */
+        const query = {
+          ...(filters.location && { latitude: filters.location.center[0] }),
+          ...(filters.location && { longitude: filters.location.center[1] }),
+          ...(filters.location?.distance && { distance: filters.location.distance })
+        };
+
+        /** @type {{ data: Post[] }} */
+        const { data: posts } = yield axios.get('/api/posts', {
+          params: query
+        });
+        yield put(setPosts(posts));
+      } catch (err) {
+        yield put(postsError(err));
+        console.error(err);
+      }
     }
-  } },
+  },
   fetchUserPosts: { type: qualifiedName('user/fetch'), saga: function*() {
     try {
       yield put(loadingPosts());
@@ -76,7 +97,6 @@ const sagas = {
         }
       }
       yield put(createPostSuccess());
-      yield put(fetchPosts());
     }
   },
   editPost: { type: qualifiedName('edit'), saga: function*(
@@ -87,7 +107,6 @@ const sagas = {
       yield axios.patch(`/api/posts/${id}`, data, {
         withCredentials: true
       });
-      yield put(fetchPosts());
     } catch (err) {
       console.error(err);
     }
@@ -124,12 +143,14 @@ const sagas = {
         }
       }
       yield put(deletePostSuccess(id));
-      yield put(fetchPosts());
     }
   }
 };
 
-export const fetchPosts = () => ({ type: sagas.fetchPosts.type });
+/**
+ * @param {Filters} filters
+ */
+export const fetchPosts = filters => ({ type: sagas.fetchPosts.type, payload: filters });
 export const fetchUserPosts = () => ({ type: sagas.fetchUserPosts.type });
 /**
  * @param {NewPost} post
