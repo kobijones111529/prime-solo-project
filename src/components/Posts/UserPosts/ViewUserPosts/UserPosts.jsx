@@ -38,7 +38,9 @@ function UserPosts() {
                 id={post.id}
                 type={post.type}
                 plantName={post.plant_name}
-                { ...(post.image_url && { imageUrl: post.image_url }) }
+                {...(post.image_url && { imageUrl: post.image_url })}
+                {...(post.description && { description: post.description })}
+                contact={post.contact_url}
               />
             )
           }</ol>

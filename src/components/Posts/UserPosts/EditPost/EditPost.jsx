@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { fetchPost } from "../../../../redux/sagas/post";
 import { editPost } from "../../../../redux/sagas/posts";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
@@ -37,6 +37,7 @@ import SelectLocationModal from "components/Posts/SelectLocationModal/SelectLoca
  */
 
 function EditUserPost() {
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const post = useAppSelector(store => store.post);
   const user = useAppSelector(store => store.user);
@@ -146,6 +147,9 @@ function EditUserPost() {
         }),
       ...(contact !== undefined && { contact: contact })
     }));
+
+    // TODO: wait for status update
+    history.push('/posts');
   };
 
   /**
@@ -427,7 +431,12 @@ function EditUserPost() {
             {showEditLocation([data.latitude, data.longitude])}
             {showEditContact(data)}
             <button type="submit">Save changes</button>
-            <button type="reset">Discard changes</button>
+            <button
+              type="reset"
+              onClick={() => {
+                history.push('/posts');
+              }}
+            >Discard changes</button>
           </form>
         );
       default:

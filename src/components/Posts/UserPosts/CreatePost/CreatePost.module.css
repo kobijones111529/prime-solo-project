@@ -1,7 +1,8 @@
 .container {
   display: flex;
   flex-flow: column;
-  border-radius: 8px;
+  align-items: center;
+  gap: 8px;
 }
 
 .map-preview-button {
@@ -13,7 +14,7 @@
   border-style: solid;
   border-color: transparent;
 
-  border-radius: inherit;
+  border-radius: 8px;
 
   background: none;
 
@@ -25,6 +26,7 @@
 }
 
 .map-preview-container {
+  margin: 16px;
   width: 80%;
   height: 200px;
   align-self: center;

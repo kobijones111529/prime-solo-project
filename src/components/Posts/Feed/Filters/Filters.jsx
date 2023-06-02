@@ -14,7 +14,7 @@ function Filters() {
 
   const [location, setLocation] = useState(
     /** @returns {{ latitude: number, longitude: number }} */
-    () => ({ latitude: filters.location?.center[0] || 0, longitude: filters.location?.center[1] || 0 })
+    () => ({ latitude: filters.location?.center[0] || 46.79, longitude: filters.location?.center[1] || -92.1 })
   );
 
   const [distanceInput, setDistanceInput] = useState('');
