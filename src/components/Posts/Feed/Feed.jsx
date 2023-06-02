@@ -36,6 +36,7 @@ function Feed() {
                   {...(post.image_url && { imageUrl: post.image_url })}
                   {...(post.description && { description: post.description })}
                   location={{ latitude: post.latitude, longitude: post.longitude }}
+                  contact={post.contact_url}
                 />
               </li>
             )}

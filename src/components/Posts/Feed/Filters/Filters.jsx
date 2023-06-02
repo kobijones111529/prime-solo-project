@@ -46,12 +46,12 @@ function Filters() {
             zoom={10}
           />
         </button>
-        <input
+        {/* <input
           type="text"
           placeholder="Distance"
           value={distanceInput}
           onChange={event => setDistanceInput(event.target.value)}
-        />
+        /> */}
         <button>
           Filter
         </button>
