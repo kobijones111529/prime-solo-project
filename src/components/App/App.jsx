@@ -9,7 +9,6 @@ import {
 import ProtectedRoute from 'components/ProtectedRoute/ProtectedRoute';
 
 import Nav from 'components/Nav/Nav';
-import Footer from 'components/Footer/Footer';
 
 import Feed from 'components/Posts/Feed/Feed';
 import UserPosts from 'components/Posts/UserPosts/ViewUserPosts/UserPosts';
@@ -92,7 +91,6 @@ function App() {
             <h1>404</h1>
           </Route>
         </Switch>
-        <Footer />
       </div>
     </Router>
   );

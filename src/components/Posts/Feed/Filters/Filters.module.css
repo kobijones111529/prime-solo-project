@@ -22,9 +22,9 @@
   border: none;
   outline-offset: 0;
 
-  border-radius: inherit;
+  border-radius: 4px;
 
-  /* background: none; */
+  background: none;
 
   cursor: pointer;
 }
