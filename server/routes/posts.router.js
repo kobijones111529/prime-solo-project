@@ -10,14 +10,59 @@ const router = express.Router();
  * @typedef {import('../../types/posts').EditPost} EditPost
  */
 
+/**
+ * @typedef {import('../../types/filters').Filters} Filters
+ * @typedef {import('../../types/filters').LocationFilter} LocationFilter
+ * @typedef {import('../../types/filters').Query} FiltersQuery
+ */
+
 // Get all posts
-router.get('/', async (_, res) => {
-  const query = `
-    SELECT * FROM "posts";
-  `;
+router.get('/', async (req, res) => {
+  /** @type {FiltersQuery} */
+  const filtersQuery = req.query;
+
+  /**
+   * @param {FiltersQuery} query
+   * @returns {LocationFilter | undefined}
+   */
+  const getLocationFilter = query => {
+    if (!filtersQuery.latitude || !filtersQuery.longitude) {
+      return undefined;
+    }
+
+    return {
+      center: [filtersQuery.latitude, filtersQuery.longitude],
+      ...(filtersQuery.distance && { distance: filtersQuery.distance })
+    };
+  }
+
+  const locationFilter = getLocationFilter(filtersQuery);
+
+  /** @type {Filters} */
+  const filters = {
+    ...(locationFilter && { location: locationFilter })
+  };
+
+  const idGen = (function*() {
+    for (let i = 1; ; i++) {
+      yield i;
+    }
+  })();
+
+  const query = filters.location
+    ?
+      `
+        SELECT * FROM "posts"
+        ORDER BY
+          ABS(("latitude" - $1) + ("longitude" - $2));
+      `
+    :
+      `
+        SELECT * FROM "posts";
+      `;
 
   try {
-    const result = await pool.query(query);
+    const result = await pool.query(query, filters.location ? [...filters.location.center] : undefined);
     res.send(result.rows);
   } catch (err) {
     console.error(err);
