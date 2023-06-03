@@ -5,6 +5,8 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
 import { useHistory } from "react-router-dom";
 
+import styles from './UserPosts.module.css';
+
 /**
  * @typedef {import("../../../../../types/posts").Post} Post
  */
@@ -31,17 +33,18 @@ function UserPosts() {
       case 'Some':
         const p = posts.posts;
         return (
-          <ol>{
+          <ol className={styles['posts-container']}>{
             p.map((/** @type {Post} */ post) =>
-              <Post
-                key={post.id}
-                id={post.id}
-                type={post.type}
-                plantName={post.plant_name}
-                {...(post.image_url && { imageUrl: post.image_url })}
-                {...(post.description && { description: post.description })}
-                contact={post.contact_url}
-              />
+              <li key={post.id}>
+                <Post
+                  id={post.id}
+                  type={post.type}
+                  plantName={post.plant_name}
+                  {...(post.image_url && { imageUrl: post.image_url })}
+                  {...(post.description && { description: post.description })}
+                  contact={post.contact_url}
+                />
+              </li>
             )
           }</ol>
         );

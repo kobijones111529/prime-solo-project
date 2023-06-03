@@ -7,6 +7,8 @@ import store from './redux/store';
 import App from 'components/App/App';
 import { rootSelector } from 'constants/index';
 
+import './index.css';
+
 const rootElement = document.querySelector(rootSelector);
 if (!rootElement) {
   throw new Error('Root element not found');
