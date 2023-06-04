@@ -26,7 +26,7 @@ function Feed() {
         return <p>Loading...</p>;
       case 'Some':
         return (
-          <ol className={styles['container']}>
+          <ol className={styles['posts-container']}>
             {feed.posts.map((/** @type {Post} */ post) =>
               <li className={styles['card']}>
                 <Post
@@ -50,7 +50,7 @@ function Feed() {
   }
 
   return (
-    <div>
+    <div className={styles['container']}>
       <Filters />
       {showFeed()}
     </div>

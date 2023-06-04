@@ -1,4 +1,12 @@
 .container {
+  display: flex;
+  flex-flow: column;
+
+  /* height: 100%; */
+  overflow: scroll;
+}
+
+.posts-container {
   margin: 32px 0;
 
   display: flex;

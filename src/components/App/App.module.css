@@ -1,0 +1,16 @@
+.app-container {
+  height: 100vh;
+
+  display: flex;
+  flex-flow: column;
+
+  overflow: hidden;
+}
+
+.app-content {
+  flex: auto;
+
+  overflow: scroll;
+
+  padding-bottom: 32px;
+}

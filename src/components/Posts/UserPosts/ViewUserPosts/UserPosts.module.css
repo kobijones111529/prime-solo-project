@@ -1,6 +1,4 @@
 .posts-container {
-  padding: 0 32px;
-
   display: flex;
   flex-flow: column;
   gap: 32px;
