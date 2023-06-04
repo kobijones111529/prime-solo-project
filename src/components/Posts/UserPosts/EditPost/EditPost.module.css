@@ -2,6 +2,8 @@
   display: flex;
   flex-flow: column;
   gap: 12px;
+
+  padding-bottom: 32px;
 }
 
 .map-button {
