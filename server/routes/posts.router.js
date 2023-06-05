@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
       `
         SELECT * FROM "posts"
         ORDER BY
-          ABS(("latitude" - $1) + ("longitude" - $2));
+          POINT("longitude", "latitude") <@> POINT($2, $1);
       `
     :
       `

@@ -43,7 +43,7 @@ function CreatePost() {
 
   const [location, setLocation] = useState(
     /** @returns {{ latitude: number, longitude: number }} */
-    () => ({ latitude: 51.5, longitude: -0.1 })
+    () => ({ latitude: 46.805, longitude: -92.081 })
   );
   const [locationModalOpen, setLocationModalOpen] = useState(false);
 

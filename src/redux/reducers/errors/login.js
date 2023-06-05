@@ -6,7 +6,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const qualifiedName = name => `errors/${name}`;
 
 /**
- * @returns {string | null}
+ * @returns {'invalid_input' | 'authentication_failed' | 'unspecified' | null}
  */
 const initialState = () => null;
 
@@ -15,9 +15,9 @@ const loginSlice = createSlice({
   initialState,
   reducers: {
     clear: () => null,
-    invalidInput: () => 'invalid_input',
-    authenticationFailed: () => 'authentication_failed',
-    unspecified: () => 'unspecified'
+    invalidInput: (_) => 'invalid_input',
+    authenticationFailed: (_) => 'authentication_failed',
+    unspecified: (_) => 'unspecified'
   }
 });
 

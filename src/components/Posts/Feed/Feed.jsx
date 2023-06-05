@@ -28,9 +28,8 @@ function Feed() {
         return (
           <ol className={styles['posts-container']}>
             {feed.posts.map((/** @type {Post} */ post) =>
-              <li className={styles['card']}>
+              <li key={post.id} className={styles['card']}>
                 <Post
-                  key={post.id}
                   type={post.type}
                   plantName={post.plant_name}
                   {...(post.image_url && { imageUrl: post.image_url })}
