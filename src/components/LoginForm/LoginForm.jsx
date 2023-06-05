@@ -9,6 +9,9 @@ function LoginForm() {
   const errors = useAppSelector(store => store.errors);
   const dispatch = useAppDispatch();
 
+  /**
+   * @param {React.FormEvent<HTMLFormElement>} event
+   */
   const handleSubmit = (event) => {
     event.preventDefault();
 

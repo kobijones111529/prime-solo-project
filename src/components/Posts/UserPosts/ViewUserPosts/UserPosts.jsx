@@ -31,20 +31,23 @@ function UserPosts() {
       case 'Loading':
         return <p>Loading...</p>;
       case 'Some':
-        const p = posts.posts;
         return (
           <ol className={styles['posts-container']}>{
-            p.map((/** @type {Post} */ post) =>
-              <li key={post.id}>
-                <Post
-                  id={post.id}
-                  type={post.type}
-                  plantName={post.plant_name}
-                  {...(post.image_url && { imageUrl: post.image_url })}
-                  {...(post.description && { description: post.description })}
-                  contact={post.contact_url}
-                />
-              </li>
+            posts.posts.map(
+              /**
+               * @param {Post} post
+               */
+              post =>
+                <li key={post.id}>
+                  <Post
+                    id={post.id}
+                    type={post.type}
+                    plantName={post.plant_name}
+                    {...(post.image_url && { imageUrl: post.image_url })}
+                    {...(post.description && { description: post.description })}
+                    contact={post.contact_url}
+                  />
+                </li>
             )
           }</ol>
         );
@@ -54,10 +57,18 @@ function UserPosts() {
   };
 
   return (
-    <div>
-      <div>
-        <button onClick={handleCreatePost}>Create post</button>
-      </div>
+    <div className={styles['container']}>
+      <i
+        onClick={handleCreatePost}
+        className={
+          [
+            'fa-solid',
+            'fa-plus',
+            styles['create-post-button']
+          ]
+            .join(' ')
+        }
+      />
       {showPosts()}
     </div>
   );

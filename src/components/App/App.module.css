@@ -3,14 +3,12 @@
 
   display: flex;
   flex-flow: column;
-
-  overflow: hidden;
 }
 
 .app-content {
   flex: auto;
 
-  overflow: scroll;
+  overflow: auto;
 
   padding-bottom: 32px;
 }
