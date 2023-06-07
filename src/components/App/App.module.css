@@ -1,14 +1,14 @@
 .app-container {
-  height: 100vh;
+	height: 100vh;
 
-  display: flex;
-  flex-flow: column;
+	display: flex;
+	flex-flow: column;
 }
 
 .app-content {
-  flex: auto;
+	flex: auto;
 
-  overflow: auto;
+	overflow: auto;
 
-  padding-bottom: 32px;
+	padding-bottom: 32px;
 }

@@ -14,26 +14,23 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = () => ({});
 
 const filtersSlice = createSlice({
-  name: 'filters',
-  initialState,
-  reducers: {
-    clear: () => ({}),
-    /**
-     * @param {{ payload: LocationFilter | null }} action
-     */
-    setLocationFilter: (state, action) => {
-      if (action.payload) {
-        state.location = action.payload;
-      } else {
-        delete state.location;
-      }
-    }
-  }
+	name: "filters",
+	initialState,
+	reducers: {
+		clear: () => ({}),
+		/**
+		 * @param {{ payload: LocationFilter | null }} action
+		 */
+		setLocationFilter: (state, action) => {
+			if (action.payload) {
+				state.location = action.payload;
+			} else {
+				delete state.location;
+			}
+		},
+	},
 });
 
-export const {
-  clear,
-  setLocationFilter
-} = filtersSlice.actions;
+export const { clear, setLocationFilter } = filtersSlice.actions;
 
 export default filtersSlice.reducer;

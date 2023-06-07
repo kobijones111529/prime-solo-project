@@ -1,7 +1,8 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
-import LoginPage from '../LoginPage/LoginPage';
-import { useAppSelector } from '../../redux/hooks';
+import React from "react";
+import { Route } from "react-router-dom";
+import LoginPage from "../LoginPage/LoginPage";
+import { useAppSelector } from "../../redux/hooks";
+import PropTypes from "prop-types";
 
 // A Custom Wrapper Component -- This will keep our code DRY.
 // Responsible for watching redux state, and returning an appropriate component
@@ -14,32 +15,32 @@ import { useAppSelector } from '../../redux/hooks';
 // and by checking req.user for authorization
 
 /**
- * @param {*} props
+ * @param {import("react-router-dom").RouteProps} props
+ * @returns {React.JSX.Element}
  */
-function ProtectedRoute({ component, children, ...props }) {
-  const user = useAppSelector((store) => store.user);
+function ProtectedRoute({ children, ...props }) {
+	const user = useAppSelector((store) => store.user);
 
-  // Component may be passed in as a "component" prop,
-  // or as a child component.
-  const ProtectedComponent = () => children;
-
-  // We return a Route component that gets added to our list of routes
-  return (
-    <Route
-      // all props like 'exact' and 'path' that were passed in
-      // are now passed along to the 'Route' Component
-      {...props}
-    >
-      {user.tag === 'Some' ?
-        // If the user is logged in, show the protected component
-        <ProtectedComponent />
-        :
-        // Otherwise, redirect to the Loginpage
-        <LoginPage />
-      }
-    </Route>
-
-  );
+	// We return a Route component that gets added to our list of routes
+	return (
+		<Route
+			// all props like 'exact' and 'path' that were passed in
+			// are now passed along to the 'Route' Component
+			{...props}
+		>
+			{user.tag === "Some" ? (
+				// If the user is logged in, show the protected component
+				children
+			) : (
+				// Otherwise, redirect to the Loginpage
+				<LoginPage />
+			)}
+		</Route>
+	);
 }
+
+ProtectedRoute.propTypes = {
+	children: PropTypes.object,
+};
 
 export default ProtectedRoute;
