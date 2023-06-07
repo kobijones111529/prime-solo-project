@@ -5,12 +5,6 @@ import posts from "./posts";
 import post from "./post";
 import registration from "./registration";
 
-export default function*() {
-  yield all([
-    login(),
-    registration(),
-    user(),
-    posts(),
-    post()
-  ]);
+export default function* () {
+	yield all([login(), registration(), user(), posts(), post()]);
 }

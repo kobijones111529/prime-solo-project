@@ -1,1 +1,1 @@
-export const rootSelector = '#react-root';
+export const rootSelector = "#react-root";

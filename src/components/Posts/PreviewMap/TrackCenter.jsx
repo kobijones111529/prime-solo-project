@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
-import { useMap } from 'react-leaflet';
+import { useEffect } from "react";
+import { useMap } from "react-leaflet";
+import PropTypes from "prop-types";
 
 /**
  * @typedef Props
@@ -9,15 +10,21 @@ import { useMap } from 'react-leaflet';
 
 /**
  * @param {Props} props
+ * @returns {null}
  */
 function TrackCenter(props) {
-  const map = useMap();
+	const map = useMap();
 
-  useEffect(() => {
-    map.setView(props.center, props.zoom);
-  }, [props.center, props.zoom]);
+	useEffect(() => {
+		map.setView(props.center, props.zoom);
+	}, [props.center, props.zoom]);
 
-  return null;
+	return null;
 }
 
-export default TrackCenter
+TrackCenter.propTypes = {
+	center: PropTypes.object.isRequired,
+	zoom: PropTypes.number.isRequired,
+};
+
+export default TrackCenter;

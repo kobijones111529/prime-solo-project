@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 /**
  * @template T
@@ -12,7 +12,7 @@ import { createSlice } from '@reduxjs/toolkit';
 /**
  * @param {string} name
  */
-const qualifiedName = name => `errors/post/${name}`;
+const qualifiedName = (name) => `errors/post/${name}`;
 
 /**
  * @returns {Status<CreateError> | null}
@@ -20,24 +20,19 @@ const qualifiedName = name => `errors/post/${name}`;
 const initialState = () => null;
 
 const createPostSlice = createSlice({
-  name: qualifiedName('create'),
-  initialState,
-  reducers: {
-    clear: () => null,
-    success: (_) => ({ tag: 'success' }),
-    pending: (_) => ({ tag: 'pending' }),
-    /**
-     * @param {{ payload: CreateError }} action
-     */
-    error: (_, action) => ({ tag: 'error', error: action.payload })
-  }
+	name: qualifiedName("create"),
+	initialState,
+	reducers: {
+		clear: () => null,
+		success: (_) => ({ tag: "success" }),
+		pending: (_) => ({ tag: "pending" }),
+		/**
+		 * @param {{ payload: CreateError }} action
+		 */
+		error: (_, action) => ({ tag: "error", error: action.payload }),
+	},
 });
 
-export const {
-  clear,
-  success,
-  pending,
-  error
-} = createPostSlice.actions;
+export const { clear, success, pending, error } = createPostSlice.actions;
 
 export default createPostSlice.reducer;
