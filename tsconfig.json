@@ -4,7 +4,7 @@
 		"moduleResolution": "node",
 		"target": "ESNext",
 		"isolatedModules": true,
-		"jsx": "react",
+		"allowSyntheticDefaultImports": true,
 		"checkJs": true,
 		"exactOptionalPropertyTypes": true,
 		"noFallthroughCasesInSwitch": true,
@@ -13,8 +13,7 @@
 		"noPropertyAccessFromIndexSignature": true,
 		"noUncheckedIndexedAccess": true,
 		"strict": true,
-		"baseUrl": "client/src",
 		"noEmit": true
 	},
-	"include": ["server"]
+	"include": ["server", "@types"]
 }

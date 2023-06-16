@@ -1,15 +1,16 @@
-const express = require("express");
-const path = require("path");
-require("dotenv").config();
+import express from "express";
+import path from "path";
+import dotenv from "dotenv";
+
+import sessionMiddleware from "./modules/session-middleware.js";
+import passport from "./strategies/user.strategy.js";
+
+import userRouter from "./routes/user.router.js";
+import postsRouter from "./routes/posts.router.js";
+
+dotenv.config();
 
 const app = express();
-
-const sessionMiddleware = require("./modules/session-middleware");
-const passport = require("./strategies/user.strategy");
-
-// Route includes
-const userRouter = require("./routes/user.router");
-const postsRouter = require("./routes/posts.router");
 
 // Body parser middleware
 app.use(express.json());

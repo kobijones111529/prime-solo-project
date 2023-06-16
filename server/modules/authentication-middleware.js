@@ -3,7 +3,7 @@
  * @param {*} res
  * @param {*} next
  */
-const rejectUnauthenticated = (req, res, next) => {
+export const rejectUnauthenticated = (req, res, next) => {
 	// check if logged in
 	if (req.isAuthenticated()) {
 		// They were authenticated! User may do the next thing
@@ -14,5 +14,3 @@ const rejectUnauthenticated = (req, res, next) => {
 		res.sendStatus(403);
 	}
 };
-
-module.exports = { rejectUnauthenticated };
