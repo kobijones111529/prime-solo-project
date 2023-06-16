@@ -2,24 +2,20 @@
 	"name": "prime-solo-project",
 	"version": "0.1.0",
 	"private": true,
-	"engines": {
-		"node": "18.x"
-	},
+	"type": "module",
 	"dependencies": {
 		"axios": "^0.21.1",
 		"bcryptjs": "^2.4.3",
 		"cookie-session": "^2.0.0",
 		"dotenv": "^16.0.3",
-		"express": "^4.17.1",
+		"express": "^4.18.2",
 		"passport": "^0.4.1",
 		"passport-local": "^1.0.0",
 		"pg": "^8.5.1"
 	},
 	"scripts": {
 		"start": "cd client && npm run build && cd .. && node server/server.js",
-		"client": "vite",
-		"server": "nodemon --watch server server/server.js",
-		"build": "vite build"
+		"server": "nodemon --watch server server/server.js"
 	},
 	"devDependencies": {
 		"@types/bcryptjs": "^2.4.2",

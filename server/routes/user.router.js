@@ -1,12 +1,9 @@
-const express = require("express");
-const {
-	rejectUnauthenticated,
-} = require("../modules/authentication-middleware");
-const encryptLib = require("../modules/encryption");
-/** @type {import('pg').Pool} */
-const pool = require("../modules/pool");
-const userStrategy = require("../strategies/user.strategy");
-const postsRouter = require("./user/posts.router");
+import express from "express";
+import { rejectUnauthenticated } from "../modules/authentication-middleware.js";
+import { encryptPassword } from "../modules/encryption.js";
+import pool from "../modules/pool.js";
+import userStrategy from "../strategies/user.strategy.js";
+import postsRouter from "./user/posts.router.js";
 
 const router = express.Router();
 
@@ -21,7 +18,7 @@ router.get("/", rejectUnauthenticated, (req, res) => {
 // is that the password gets encrypted before being inserted
 router.post("/register", (req, res) => {
 	const username = req.body.username;
-	const password = encryptLib.encryptPassword(req.body.password);
+	const password = encryptPassword(req.body.password);
 
 	const queryText = `
 		INSERT INTO "users" (username, password)
@@ -53,4 +50,4 @@ router.post("/logout", (req, res) => {
 
 router.use("/posts", postsRouter);
 
-module.exports = router;
+export default router;

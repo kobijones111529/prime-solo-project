@@ -1,7 +1,7 @@
 // No changes should be required in this file
 
-const cookieSession = require("cookie-session");
-const warnings = require("../constants/warnings");
+import cookieSession from "cookie-session";
+import * as warnings from "../constants/warnings.js";
 
 /*
   The cookie session makes it so a user can enters their username and password one time,
@@ -26,7 +26,7 @@ const serverSessionSecret = () => {
 	return process.env["SERVER_SESSION_SECRET"];
 };
 
-module.exports = cookieSession({
+export default cookieSession({
 	secret: serverSessionSecret() || "secret", // please set this in your .env file
 	// key: 'user', // this is the name of the req.variable. 'user' is convention, but not required
 	// resave: 'false',

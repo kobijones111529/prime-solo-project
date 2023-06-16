@@ -10,19 +10,16 @@ module.exports = {
 		"eslint:recommended",
 		"plugin:react/recommended",
 		"plugin:jsdoc/recommended",
-		"plugin:@typescript-eslint/eslint-recommended",
-		"plugin:@typescript-eslint/recommended",
 	],
 	overrides: [],
-	parser: "@typescript-eslint/parser",
 	parserOptions: {
 		ecmaFeatures: {
-			"jsx": true
+			jsx: true,
 		},
 		ecmaVersion: "latest",
 		sourceType: "module",
 	},
-	plugins: ["react", "jsdoc", "@typescript-eslint"],
+	plugins: ["react", "jsdoc"],
 	settings: {
 		react: {
 			version: "detect",
@@ -31,14 +28,6 @@ module.exports = {
 	rules: {
 		"no-self-assign": 1,
 		"no-unused-vars": [
-			"error",
-			{
-				argsIgnorePattern: "^_",
-				varsIgnorePattern: "^_",
-				caughtErrorsIgnorePattern: "^_",
-			},
-		],
-		"@typescript-eslint/no-unused-vars": [
 			"error",
 			{
 				argsIgnorePattern: "^_",

@@ -1,9 +1,7 @@
-const express = require("express");
-/** @type {import('pg').Pool} */
-const pool = require("../modules/pool");
-const {
-	rejectUnauthenticated,
-} = require("../modules/authentication-middleware");
+import express from "express";
+import pool from "../modules/pool.js";
+import { rejectUnauthenticated } from "../modules/authentication-middleware.js";
+
 const router = express.Router();
 
 /**
@@ -255,4 +253,4 @@ router.delete("/:id", rejectUnauthenticated, async (req, res) => {
 	}
 });
 
-module.exports = router;
+export default router;
