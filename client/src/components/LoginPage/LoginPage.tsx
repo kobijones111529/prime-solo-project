@@ -14,7 +14,7 @@ function LoginPage() {
 					type="button"
 					className="btn btn_asLink"
 					onClick={() => {
-						navigate("/registration");
+						navigate("/register");
 					}}
 				>
 					Register
