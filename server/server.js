@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -27,10 +28,14 @@ app.use("/api/user", userRouter);
 app.use("/api/posts", postsRouter);
 
 // Serve static files
-app.use(express.static("build"));
+app.use(express.static(path.resolve("client", "build")));
+
+app.get("*", (_req, res) => {
+	res.sendFile(path.resolve("client", "build", "index.html"));
+});
 
 // App Set //
-const PORT = process.env["SERVER_PORT"] || process.env["PORT"] || 5000;
+const PORT = process.env["SERVER_PORT"] || 5000;
 
 app.listen(PORT, () => {
 	console.log(`Listening on port: ${PORT}`);
