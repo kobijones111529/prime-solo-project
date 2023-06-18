@@ -27,13 +27,15 @@ const sagas = {
 			try {
 				yield put(loadingPosts());
 
-				const query: Query = {
-					...(filters.location && { latitude: filters.location.center[0] }),
-					...(filters.location && { longitude: filters.location.center[1] }),
-					...(filters.location?.distance && {
-						distance: filters.location.distance,
-					}),
-				};
+				const query: Query = filters.location
+					? {
+							latitude: filters.location.center[0],
+							longitude: filters.location.center[1],
+							...(filters.location.distance && {
+								distance: filters.location.distance,
+							}),
+					  }
+					: {};
 
 				const { data: posts }: AxiosResponse<Post[]> = yield axios.get(
 					"/api/posts",

@@ -7,8 +7,10 @@ export type Filters = {
 	location?: LocationFilter;
 };
 
-export type Query = {
-	latitude?: number;
-	longitude?: number;
-	distance?: number;
-};
+export type Query =
+	| {
+			latitude: number;
+			longitude: number;
+			distance?: number;
+	  }
+	| {};

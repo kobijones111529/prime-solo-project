@@ -1,94 +1,171 @@
 import express from "express";
 import pool from "../modules/pool.js";
 import { rejectUnauthenticated } from "../modules/authentication-middleware.js";
+import { z } from "zod";
 
 const router = express.Router();
 
 /**
+ * @typedef {import("../../types/posts").Post} Post
  * @typedef {import('../../types/posts').NewPost} NewPost
  * @typedef {import('../../types/posts').EditPost} EditPost
  */
 
 /**
- * @typedef {import('../../types/filters').Filters} Filters
- * @typedef {import('../../types/filters').LocationFilter} LocationFilter
  * @typedef {import('../../types/filters').Query} FiltersQuery
  */
 
 // Get all posts
-router.get("/", async (req, res) => {
-	/** @type {FiltersQuery} */
-	const filtersQuery = req.query;
-
+router.get(
+	"/",
 	/**
-	 * @returns {LocationFilter | undefined}
+	 * @typedef {Post[]} ResponseBody
+	 * @typedef {FiltersQuery} RequestQuery
+	 * @param {import("express").Request<{}, ResponseBody>} req
+	 * @param {import("express").Response<ResponseBody>} res
 	 */
-	const getLocationFilter = () => {
-		if (!filtersQuery.latitude || !filtersQuery.longitude) {
-			return undefined;
+	async (req, res) => {
+		// Using optional never properties to represent a
+		// union with an empty object, but which can be
+		// narrowed (a union with an empty object cannot)
+		const queryValidator = z
+			.object({
+				latitude: z.preprocess(Number, z.number().gte(-90).lte(90)),
+				longitude: z.preprocess(Number, z.number().gte(-180).lte(180)),
+				distance: z.preprocess(Number, z.number().gt(0)).optional(),
+			})
+			.or(
+				z.object({
+					latitude: z.never().optional(),
+					longitude: z.never().optional(),
+				})
+			);
+
+		const parsedQuery = queryValidator.safeParse(req.query);
+		if (!parsedQuery.success) {
+			res.sendStatus(400);
+			return;
 		}
+		const query = parsedQuery.data;
 
-		return {
-			center: [filtersQuery.latitude, filtersQuery.longitude],
-			...(filtersQuery.distance && { distance: filtersQuery.distance }),
+		const locationFilter = query.latitude
+			? {
+					latitude: query.latitude,
+					longitude: query.longitude,
+					...(query.distance && { distance: query.distance }),
+			  }
+			: undefined;
+
+		const filters = {
+			...(locationFilter && { location: locationFilter }),
 		};
-	};
 
-	const locationFilter = getLocationFilter();
-
-	/** @type {Filters} */
-	const filters = {
-		...(locationFilter && { location: locationFilter }),
-	};
-
-	const query = filters.location
-		? `
-				SELECT * FROM "posts"
+		const selectQuery = `
+				SELECT
+					"id",
+					"user_id" AS "user_id",
+					"type",
+					"plant_name" AS "plant_name",
+					"image_url" AS "image_url",
+					"description",
+					"latitude"::DOUBLE PRECISION,
+					"longitude"::DOUBLE PRECISION,
+					"contact_url" AS "contact_url"
+				FROM "posts"
 				ORDER BY
-					POINT("longitude", "latitude") <@> POINT($2, $1);
-			`
-		: `
-				SELECT * FROM "posts";
+					CASE WHEN
+						$1::DOUBLE PRECISION IS NOT NULL AND
+						$2::DOUBLE PRECISION IS NOT NULL
+					THEN POINT("longitude", "latitude") <@> POINT($2, $1)
+					END
 			`;
 
-	try {
-		const result = await pool.query(
-			query,
-			filters.location ? [...filters.location.center] : undefined
-		);
-		res.send(result.rows);
-	} catch (err) {
-		console.error(err);
-		res.sendStatus(500);
-	}
-});
-
-router.get("/:id", async (req, res) => {
-	const id = Number(req.params.id) || undefined;
-	if (id === undefined) {
-		res.sendStatus(404);
-		return;
-	}
-
-	const query = `
-		SELECT * FROM "posts"
-		WHERE "id" = $1;
-	`;
-
-	try {
-		const { rows: posts } = await pool.query(query, [id]);
-		const post = posts[0];
-
-		if (post === undefined) {
-			res.sendStatus(404);
-		} else {
-			res.send(post);
+		try {
+			const { rows: posts } = await pool.query(selectQuery, [
+				filters.location?.latitude || null,
+				filters.location?.longitude || null,
+			]);
+			const parsedPosts = z
+				.array(
+					z.object({
+						id: z.number(),
+						user_id: z.number(),
+						type: z.enum(["offer", "request"]),
+						plant_name: z.string(),
+						image_url: z.string().nullable(),
+						description: z.string().nullable(),
+						latitude: z.number(),
+						longitude: z.number(),
+						contact_url: z.string(),
+					})
+				)
+				.parse(posts);
+			res.send(parsedPosts);
+		} catch (err) {
+			console.error(err);
+			res.sendStatus(500);
 		}
-	} catch (err) {
-		console.error(err);
-		res.sendStatus(500);
 	}
-});
+);
+
+router.get(
+	"/:id",
+	/**
+	 * @param {import("express").Request<{"id": string}, {}, {}>} req
+	 * @param {import("express").Response<{}>} res
+	 */
+	async (req, res) => {
+		const id = Number(req.params["id"]) || undefined;
+		if (id === undefined) {
+			res.sendStatus(404);
+			return;
+		}
+
+		const query = `
+			SELECT
+				"id",
+				"user_id" AS "user_id",
+				"type",
+				"plant_name" AS "plant_name",
+				"image_url" AS "image_url",
+				"description",
+				"latitude"::DOUBLE PRECISION,
+				"longitude"::DOUBLE PRECISION,
+				"contact_url" AS "contact_url"
+			FROM "posts"
+			WHERE "id" = $1
+		`;
+
+		try {
+			const { rows: posts } = await pool.query(query, [id]);
+			const parsedPosts = z
+				.array(
+					z.object({
+						id: z.number().int(),
+						user_id: z.number().int(),
+						type: z.enum(["offer", "request"]),
+						plant_name: z.string(),
+						image_url: z.string().nullable(),
+						description: z.string().nullable(),
+						latitude: z.number(),
+						longitude: z.number(),
+						contact_url: z.string(),
+					})
+				)
+				.parse(posts);
+			const post = parsedPosts[0] || undefined;
+
+			if (post === undefined) {
+				res.sendStatus(404);
+			} else {
+				res.send(post);
+			}
+		} catch (err) {
+			console.error(err);
+			res.sendStatus(500);
+		}
+	}
+);
 
 // Create a new post
 router.post("/", rejectUnauthenticated, async (req, res) => {
@@ -97,8 +174,26 @@ router.post("/", rejectUnauthenticated, async (req, res) => {
 		return;
 	}
 
+	const bodyValidator = z.object({
+		type: z.enum(["offer", "request"]),
+		plantName: z.string(),
+		imageUrl: z.string().url().nullable(),
+		description: z.string().nullable(),
+		location: z.object({
+			latitude: z.number().gte(-90).lte(90),
+			longitude: z.number().gte(-180).lte(180),
+		}),
+		contact: z.string(),
+	});
+
+	const parsedBody = bodyValidator.safeParse(req.body);
+	if (!parsedBody.success) {
+		res.sendStatus(400);
+		return;
+	}
+
 	/** @type {NewPost} */
-	const data = req.body;
+	const body = parsedBody.data;
 
 	const query = `
 		INSERT INTO "posts" (
@@ -115,13 +210,13 @@ router.post("/", rejectUnauthenticated, async (req, res) => {
 	`;
 	const queryData = [
 		req.user.id,
-		data.type,
-		data.plantName,
-		data.imageUrl,
-		data.description,
-		data.location.latitude,
-		data.location.longitude,
-		data.contact,
+		body.type,
+		body.plantName,
+		body.imageUrl,
+		body.description,
+		body.location.latitude,
+		body.location.longitude,
+		body.contact,
 	];
 
 	try {
@@ -133,79 +228,114 @@ router.post("/", rejectUnauthenticated, async (req, res) => {
 	}
 });
 
-router.patch("/:id", rejectUnauthenticated, async (req, res) => {
-	if (!req.user) {
-		res.sendStatus(500);
-		return;
-	}
+router.patch(
+	"/:id",
+	rejectUnauthenticated,
+	/**
+	 * @param {import("express").Request<{ "id": string }, {}>} req
+	 * @param {import("express").Response<{}>} res
+	 */
+	async (req, res) => {
+		const bodyValidator = z.object({
+			type: z.enum(["offer", "request"]).optional(),
+			plantName: z.string().nonempty().optional(),
+			imageUrl: z.string().nonempty().nullable().optional(),
+			description: z.string().nonempty().nullable().optional(),
+			location: z
+				.object({
+					latitude: z.number().gte(-90).lte(90),
+					longitude: z.number().gte(-180).lte(180),
+				})
+				.optional(),
+			contact: z.string().optional(),
+		});
 
-	try {
-		const userId = Number(req.user.id);
-		const postId = Number(req.params.id);
+		if (!req.user) {
+			res.sendStatus(500);
+			return;
+		}
 
-		const getQuery = `
-			SELECT
-				"user_id" AS "userId"
-			FROM "posts"
-			WHERE "id" = $1;
-		`;
-
-		/**
-		 * @type {{ rows: { userId: number }[] }}
-		 */
-		const { rows: posts } = await pool.query(getQuery, [postId]);
-		const post = posts[0];
-
-		if (post === undefined) {
+		const postId = Number(req.params["id"]) || undefined;
+		// "id" param is invalid
+		if (!postId || !Number.isInteger(postId)) {
 			res.sendStatus(404);
 			return;
 		}
 
-		if (post.userId !== userId) {
-			res.sendStatus(403);
-			return;
-		}
+		try {
+			const { rows: posts } = await pool.query(
+				`
+					SELECT
+						"user_id" AS "userId"
+					FROM "posts"
+					WHERE "id" = $1;
+				`,
+				[postId]
+			);
+			const parsedPosts = z
+				.array(
+					z.object({
+						userId: z.number().int(),
+					})
+				)
+				.parse(posts);
+			const post = parsedPosts[0] || undefined;
 
-		/** @type {EditPost} */
-		const body = req.body;
+			if (post === undefined) {
+				res.sendStatus(404);
+				return;
+			}
 
-		const data = {
-			type: body.type,
-			plant_name: body.plantName,
-			image_url: body.imageUrl,
-			description: body.description,
-			contact_url: body.contact,
-			longitude: body.location?.longitude,
-			latitude: body.location?.latitude,
-		};
-		const entries = Object.entries(data).filter(
-			([_, value]) => value !== undefined
-		);
+			if (post.userId !== req.user.id) {
+				res.sendStatus(403);
+				return;
+			}
 
-		if (entries.length < 1) {
-			res.sendStatus(200);
-			return;
-		}
+			const parsedBody = bodyValidator.safeParse(req.body);
+			if (!parsedBody.success) {
+				res.sendStatus(400);
+				return;
+			}
+			const body = parsedBody.data;
 
-		const offset = 1;
-		const updates = entries
-			.map(([key, _], index) => `${key} = $${index + 1 + offset}`)
-			.join(", ");
-		const sqlParams = [postId, ...entries.map(([_, value]) => value)];
+			const updates = Object.entries({
+				type: body.type,
+				plant_name: body.plantName,
+				image_url: body.imageUrl,
+				description: body.description,
+				contact_url: body.contact,
+				longitude: body.location?.longitude,
+				latitude: body.location?.latitude,
+			}).filter(([_, value]) => value !== undefined);
 
-		const editQuery = `
+			if (updates.length < 1) {
+				res.sendStatus(200);
+				return;
+			}
+
+			const staticSqlParams = [postId];
+			const dynamicSqlParams = updates.map(([_, value]) => value);
+			const sqlUpdates = updates
+				.map(
+					([key, _], index) => `${key} = $${index + dynamicSqlParams.length}`
+				)
+				.join(", ");
+			const sqlParams = [...staticSqlParams, ...dynamicSqlParams];
+
+			const editQuery = `
 			UPDATE "posts"
-			SET ${updates}
+			SET ${sqlUpdates}
 			WHERE "id" = $1;
 		`;
-		await pool.query(editQuery, sqlParams);
+			await pool.query(editQuery, sqlParams);
 
-		res.sendStatus(200);
-	} catch (err) {
-		console.error(err);
-		res.sendStatus(500);
+			res.sendStatus(200);
+		} catch (err) {
+			console.error(err);
+			res.sendStatus(500);
+		}
 	}
-});
+);
 
 router.delete("/:id", rejectUnauthenticated, async (req, res) => {
 	if (!req.user) {
@@ -213,20 +343,26 @@ router.delete("/:id", rejectUnauthenticated, async (req, res) => {
 		return;
 	}
 
-	const userId = Number(req.user.id);
 	const postId = Number(req.params.id);
 
-	const getPostsQuery = `
-		SELECT
-			"user_id" AS "userId"
-		FROM "posts"
-		WHERE "id" = $1;
-	`;
-
 	try {
-		/** @type {{ rows: { userId: number }[] }} */
-		const { rows: posts } = await pool.query(getPostsQuery, [req.params.id]);
-		const post = posts[0];
+		const { rows: posts } = await pool.query(
+			`
+				SELECT
+					"user_id" AS "userId"
+				FROM "posts"
+				WHERE "id" = $1;
+			`,
+			[req.params.id]
+		);
+		const parsedPosts = z
+			.array(
+				z.object({
+					userId: z.number().int(),
+				})
+			)
+			.parse(posts);
+		const post = parsedPosts[0] || undefined;
 
 		// Post not found
 		if (post === undefined) {
@@ -235,17 +371,18 @@ router.delete("/:id", rejectUnauthenticated, async (req, res) => {
 		}
 
 		// Users don't match
-		if (post.userId !== userId) {
+		if (post.userId !== req.user.id) {
 			res.sendStatus(403);
 			return;
 		}
 
-		const deletePostQuery = `
-			DELETE FROM "posts"
-			WHERE "id" = $1;
-		`;
-
-		await pool.query(deletePostQuery, [postId]);
+		await pool.query(
+			`
+				DELETE FROM "posts"
+				WHERE "id" = $1;
+			`,
+			[postId]
+		);
 		res.sendStatus(200);
 	} catch (err) {
 		console.error(err);

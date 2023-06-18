@@ -26,6 +26,7 @@ module.exports = {
 		},
 	},
 	rules: {
+		"no-mixed-spaces-and-tabs": 0,
 		"no-self-assign": 1,
 		"no-unused-vars": [
 			"error",
