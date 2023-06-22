@@ -18,6 +18,7 @@
 	},
 	"scripts": {
 		"start": "cd client && npx vite build && cd .. && node server/server.js",
+		"build": "cd client && npm run build && cd ..",
 		"server": "nodemon --watch server server/server.js"
 	},
 	"devDependencies": {
