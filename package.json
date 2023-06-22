@@ -17,7 +17,8 @@
 		"pg": "^8.5.1"
 	},
 	"scripts": {
-		"start": "cd client && npm install && npm run build && cd .. && node server/server.js",
+		"start": "cd client && npm run build && cd .. && node server/server.js",
+		"postinstall": "npm install --prefix client",
 		"build": "cd client && npm run build && cd ..",
 		"server": "nodemon --watch server server/server.js"
 	},
