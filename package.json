@@ -14,7 +14,7 @@
 		"pg": "^8.5.1"
 	},
 	"scripts": {
-		"start": "cd client && npm run build && cd .. && node server/server.js",
+		"start": "cd client && vite build && cd .. && node server/server.js",
 		"server": "nodemon --watch server server/server.js"
 	},
 	"devDependencies": {
